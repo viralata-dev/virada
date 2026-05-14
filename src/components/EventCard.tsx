@@ -3,6 +3,7 @@
 import { Badge, Card, Flex, Group, Stack, Switch, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
+import { formatDuration, isEventHappening } from "../utils/event";
 
 interface EventCardProps {
   event: {
@@ -21,34 +22,8 @@ export function EventCard({ event, onToggleAttending }: EventCardProps) {
 
   // Check if the event is currently happening
   useEffect(() => {
-    const checkIfHappening = () => {
-      const now = new Date();
-      const currentHour = now.getHours();
-      const currentDate = `${now.getDate()}.${now.getMonth() + 1}`;
-
-      // Extract hour from event time (format: "18h" or "20h30")
-      const timeMatch = event.time.match(/^(\d+)h(\d+)?/);
-      if (!timeMatch) return false;
-
-      const eventHour = Number.parseInt(timeMatch[1], 10);
-      const eventMinutes = timeMatch[2] ? Number.parseInt(timeMatch[2], 10) : 0;
-
-      // If event has a date, check if it's today
-      if (event.date && event.date !== currentDate) {
-        return false;
-      }
-
-      // Calculate event end time
-      const eventEndHour = eventHour + Math.floor(event.duration / 60);
-      const eventEndMinutes = eventMinutes + (event.duration % 60);
-
-      // Check if current time is within event time range
-      const eventStartTime = eventHour + eventMinutes / 60;
-      const eventEndTime = eventEndHour + eventEndMinutes / 60;
-      const currentTime = currentHour + now.getMinutes() / 60;
-
-      return currentTime >= eventStartTime && currentTime <= eventEndTime;
-    };
+    const checkIfHappening = () =>
+      isEventHappening(event.time, event.duration, event.date, new Date());
 
     // Initial check
     setIsHappening(checkIfHappening());
@@ -65,13 +40,6 @@ export function EventCard({ event, onToggleAttending }: EventCardProps) {
     const newAttendingState = !isAttending;
     setIsAttending(newAttendingState);
     onToggleAttending(newAttendingState);
-  };
-
-  // Format duration to hours and minutes
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours > 0 ? `${hours}h` : ""}${mins > 0 ? ` ${mins}min` : ""}`;
   };
 
   // Determine card color based on day and happening status

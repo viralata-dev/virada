@@ -2,7 +2,8 @@
 
 import { Box, Button, Container, Group, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { dateToNumeric, timeToHour } from "../utils/event";
 import { DateTimeFilter } from "./DateTimeFilter";
 import { EventCard } from "./EventCard";
 import { LocationFilter } from "./LocationFilter";
@@ -44,30 +45,7 @@ export function EventsGrid({ data: initialData }: EventsGridProps) {
     other: number;
   }>({ saturday: 0, sunday: 0, other: 0 });
 
-  // Helper function to convert time string to hour number
-  const timeToHour = useCallback((timeStr: string): number => {
-    const match = timeStr.match(/^(\d+)h/);
-    if (match) {
-      return Number.parseInt(match[1], 10);
-    }
-    return 0;
-  }, []);
-
-  // Helper function to convert date string to a numeric value for sorting
-  const dateToNumeric = useCallback((dateStr: string | undefined): number => {
-    if (!dateStr) return 999; // If no date, put at the end
-
-    // Extract day and month from format like "24.5"
-    const parts = dateStr.split(".");
-    if (parts.length === 2) {
-      // Ensure Saturday (24.5) comes before Sunday (25.5)
-      return Number.parseInt(parts[0], 10);
-    }
-    return 999; // If invalid format, put at the end
-  }, []);
-
   // Apply filters to events and sort by day and time
-  // biome-ignore lint/correctness/useExhaustiveDependencies: avoid re-rendering
   useEffect(() => {
     const filtered: { [key: string]: Event[] } = {};
 
@@ -193,7 +171,7 @@ export function EventsGrid({ data: initialData }: EventsGridProps) {
     }
 
     setFilteredEvents(filtered);
-  }, [locations, selectedLocations, timeRange, selectedDate, showAttendingOnly, dateToNumeric]);
+  }, [locations, selectedLocations, timeRange, selectedDate, showAttendingOnly]);
 
   // Sort events by day and time when component mounts
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -223,7 +201,6 @@ export function EventsGrid({ data: initialData }: EventsGridProps) {
 
     setLocations(locationsWithSortedEvents);
     // Only run this effect once on mount to avoid infinite loops
-    // biome-ignore lint/correctness/useExhaustiveDependencies: Intentionally empty to avoid re-renders
   }, []);
 
   // Save attending state to localStorage

@@ -8,22 +8,30 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check --apply src",
-    "format": "biome format --write src"
+    "format": "biome format --write src",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
-    "@mantine/core": "^8.0.1",
-    "@mantine/dates": "^8.0.1",
-    "@mantine/hooks": "^8.0.1",
-    "dayjs": "^1.11.13",
-    "next": "15.1.8",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "@mantine/core": "^8.3.18",
+    "@mantine/dates": "^8.3.18",
+    "@mantine/hooks": "^8.3.18",
+    "dayjs": "^1.11.20",
+    "next": "16.2.6",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "typescript": "^5"
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^20.19.41",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "jsdom": "^29.1.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.6"
   }
 }
