@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { EventCard } from "../components/EventCard";
+import { EventCard } from "./EventCard";
 
 const renderWithMantine = (ui: React.ReactElement) =>
   render(<MantineProvider>{ui}</MantineProvider>);

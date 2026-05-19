@@ -2,7 +2,7 @@ import { MantineProvider } from "@mantine/core";
 import { render, screen } from "@testing-library/react";
 import type React from "react";
 import { describe, expect, it } from "vitest";
-import { TimeBar } from "../components/TimeBar";
+import { TimeBar } from "./TimeBar";
 
 const renderWithMantine = (ui: React.ReactElement) =>
   render(<MantineProvider>{ui}</MantineProvider>);

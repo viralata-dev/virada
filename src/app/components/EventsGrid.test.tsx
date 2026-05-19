@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { EventsGrid } from "../components/EventsGrid";
+import { EventsGrid } from "./EventsGrid";
 
 const renderWithMantine = (ui: React.ReactElement) =>
   render(<MantineProvider>{ui}</MantineProvider>);
