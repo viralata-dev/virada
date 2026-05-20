@@ -7,19 +7,17 @@ import { useEffect } from "react";
 import { DataGrid } from "~/app/components/DataGrid";
 
 export default function Page2026() {
-    const router = useRouter();
+  const router = useRouter();
 
-    useEffect(() => {
-        if (!isLoggedIn()) {
-            router.replace("/login");
-        }
-    }, [router]);
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      router.replace("/login");
+    }
+  }, [router]);
 
-    return (
-        <main>
-            <Container py="md" fs="xs">
-                <DataGrid />
-            </Container>
-        </main>
-    );
+  return (
+    <Container component="main" py="md" fs="xs">
+      <DataGrid />
+    </Container>
+  );
 }

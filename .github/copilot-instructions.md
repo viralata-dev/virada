@@ -80,4 +80,7 @@ When adapting for a new year (e.g. 2026):
 - Do not add server-side logic — keep the app statically deployable.
 - When updating event-data structure, keep backwards compatibility with the existing component
   interface or update all consuming components in the same change.
+- For every Mantine component that is added or modified in code, include a short inline comment
+  near its usage with an official Mantine docs link (prefer the `/core/<component>/#usage` anchor)
+  so future edits can quickly verify API props.
 - Run `pnpm lint` to verify changes before committing.

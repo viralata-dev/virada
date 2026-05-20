@@ -1,12 +1,11 @@
 "use client";
 
-import { useEventAttendingState } from "@hooks/useEventAttendingState";
-import { useEventFiltering } from "@hooks/useEventFiltering";
-import { Box, Button, Container, Group, ScrollArea, Stack, Text, Title } from "@mantine/core";
-
 import { DateTimeFilter } from "@components/DateTimeFilter";
 import { EventCard } from "@components/EventCard";
 import { LocationFilter } from "@components/LocationFilter";
+import { useEventAttendingState } from "@hooks/useEventAttendingState";
+import { useEventFiltering } from "@hooks/useEventFiltering";
+import { Box, Button, Container, Group, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import {
   getEventTopOffset,
   getTimelineCardHeight,
@@ -15,7 +14,7 @@ import {
 } from "@utils/event";
 import Image from "next/image";
 import { useState } from "react";
-import { EventsData } from "~/types/event";
+import type { EventsData } from "~/types/event";
 
 interface EventsGridProps {
   data: EventsData;
