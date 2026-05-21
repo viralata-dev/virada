@@ -51,9 +51,6 @@ src/
 ```
 
 ## Component conventions
-- All components are **client components** (`"use client"`) — the data is static and filtering
-  is all done in-browser.
-- **No server actions, no API routes.** Keep the app fully static.
 - Use **Mantine** components for all UI. Do not introduce other component libraries.
 - Inline styles are acceptable for layout-critical one-offs (e.g. card height from duration).
   Prefer Mantine props (`p`, `m`, `gap`, `c`, `fw`, etc.) over inline styles where possible.
@@ -61,26 +58,28 @@ src/
   break this proportional layout.
 
 ## Styling rules
+- Use Mantine's default theme and components for all styling. Do not add custom CSS,  or
+  component libraries.
+- Colors should be from the Mantine palette (e.g. `"blue"`, `"violet"`, `"orange"`) if needed create custom color palletes in [theme.ts](src/app/theme.ts) instead of hardcoding hex values.
 - Biome formatter: 2-space indent, double quotes, trailing commas (ES5), 100-char line width.
 - Always run `pnpm lint` before committing.
 - Day colour coding: Saturday (`24.5`) = blue (`#E3F2FD` / `"blue"`), Sunday (`25.5`) = purple
   (`#F3E5F5` / `"violet"`), happening now = orange (`#FFF3E0` / `"orange"`).
 
 ## Updating for a new edition
-When adapting for a new year (e.g. 2026):
-1. Replace `src/data/events.json` with the new crawl output from virada-bot.
-2. Update dates in `DateTimeFilter.tsx` (`SegmentedControl` data values and labels).
-3. Update date comparisons in `EventCard.tsx` (hardcoded `"24.5"` / `"25.5"` strings).
-4. Update `metadata` in `src/app/layout.tsx` (title/description).
-5. Verify `TimeBar` hour range still covers the festival schedule.
+We should do a yearly refresh of the event data from the virada-bot crawler, which may include new fields or structural changes. When updating the data structure, ensure that the app remains backwards compatible. Avoid reusing last version's components and pages. Create new ones with the necessary adjustments, and keep the old ones for reference until the new version is stable.
 
 ## Agent behaviour
 - Prefer surgical, focused changes over large rewrites.
 - Do not introduce new dependencies without a clear reason.
-- Do not add server-side logic — keep the app statically deployable.
+- When in doubt, ask for clarification instead of making assumptions about requirements or design.
+- The app should be quick and responsive, so avoid heavy computations or unnecessary re-renders in the React components.
+- Implement a server api route if you need to perform complex data transformations or if you want to keep the client-side code simpler, but prefer client-side filtering for better responsiveness with the static data.
 - When updating event-data structure, keep backwards compatibility with the existing component
   interface or update all consuming components in the same change.
 - For every Mantine component that is added or modified in code, include a short inline comment
   near its usage with an official Mantine docs link (prefer the `/core/<component>/#usage` anchor)
   so future edits can quickly verify API props.
-- Run `pnpm lint` to verify changes before committing.
+- When a task is done, prompt the user to verify the changes locally by running the app and checking the relevant UI parts. If the change is not visible in the UI, provide instructions on how to trigger it (e.g. "go to the share page to see the new QR code component"). If the changes are approved by the user, commit and proceed to the next task. If not, iterate on the feedback and update the code until it is approved.
+- Run `tsc`, `pnpm lint` and `pnpm format` to verify changes before committing.
+- After commiting create tests for each feature created or modified, and ensure all tests pass before moving on to the next task.
