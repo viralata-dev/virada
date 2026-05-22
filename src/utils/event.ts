@@ -1,9 +1,126 @@
 import type { CSSProperties } from "react";
 import type { DayGroups, Event, Location } from "../types/event";
+import type { EventRecord } from "../types/event26";
 
 const SATURDAY_DATE = "24.5";
 const SUNDAY_DATE = "25.5";
 const PIXELS_PER_HOUR = 100;
+
+export interface NormalizedEvent {
+  id: string;
+  title: string;
+  venue: string;
+  category: string;
+  region: string;
+  startDate: string;
+  startTime: string;
+  endTime: string;
+  startHour: number;
+  endHour: number;
+  tags: string[];
+  description: string;
+  address: string;
+  imageUrl: string | null;
+}
+
+export interface FilterIndex {
+  dayToEventIds: Map<string, Set<string>>;
+  hourToEventIds: Map<number, Set<string>>;
+  categoryToEventIds: Map<string, Set<string>>;
+  venueToEventIds: Map<string, Set<string>>;
+  regionToEventIds: Map<string, Set<string>>;
+  allEventIds: Set<string>;
+}
+
+export function parseTimeToHour(timeStr: string | null): number {
+  if (!timeStr) return 0;
+  const match = timeStr.match(/^(\d+):/);
+  return match ? Math.min(23, Math.max(0, Number.parseInt(match[1], 10))) : 0;
+}
+
+export function normalizeEvent(record: EventRecord, index: number): NormalizedEvent | null {
+  if (!record.title || !record.venue || !record.category || !record.start_date) {
+    return null;
+  }
+
+  const startHour = parseTimeToHour(record.start_time);
+  const endHour = parseTimeToHour(record.end_time);
+
+  return {
+    id: record.source_url || `event-${index}`,
+    title: record.title,
+    venue: record.venue.trim(),
+    category: record.category.trim(),
+    region: record.region?.trim() ?? "Unknown",
+    startDate: record.start_date,
+    startTime: record.start_time ?? "00:00",
+    endTime: record.end_time ?? "23:59",
+    startHour,
+    endHour: endHour >= startHour ? endHour : 23,
+    tags: (record.tags ?? []).filter((t) => t?.trim()),
+    description: record.description ?? "",
+    address: record.address ?? "",
+    imageUrl: record.image_url,
+  };
+}
+
+export function buildFilterIndex(events: NormalizedEvent[]): FilterIndex {
+  const index: FilterIndex = {
+    dayToEventIds: new Map(),
+    hourToEventIds: new Map(),
+    categoryToEventIds: new Map(),
+    venueToEventIds: new Map(),
+    regionToEventIds: new Map(),
+    allEventIds: new Set(),
+  };
+
+  const getOrCreate = <K, V>(map: Map<K, Set<V>>, key: K): Set<V> => {
+    let set = map.get(key);
+    if (!set) {
+      set = new Set();
+      map.set(key, set);
+    }
+    return set;
+  };
+
+  for (const event of events) {
+    index.allEventIds.add(event.id);
+    getOrCreate(index.dayToEventIds, event.startDate).add(event.id);
+    getOrCreate(index.hourToEventIds, event.startHour).add(event.id);
+    getOrCreate(index.categoryToEventIds, event.category).add(event.id);
+    getOrCreate(index.venueToEventIds, event.venue).add(event.id);
+    getOrCreate(index.regionToEventIds, event.region).add(event.id);
+  }
+
+  return index;
+}
+
+export function intersectSets<T>(...sets: Set<T>[]): Set<T> {
+  if (sets.length === 0) return new Set();
+  if (sets.length === 1) return new Set(sets[0]);
+
+  const result = new Set(sets[0]);
+  for (const set of sets.slice(1)) {
+    for (const item of result) {
+      if (!set.has(item)) {
+        result.delete(item);
+      }
+    }
+  }
+
+  return result;
+}
+
+export function unionSets<T>(...sets: Set<T>[]): Set<T> {
+  const result = new Set<T>();
+  for (const set of sets) {
+    for (const item of set) {
+      result.add(item);
+    }
+  }
+
+  return result;
+}
 
 export function timeToHour(timeStr: string): number {
   const match = timeStr.match(/^(\d+)h/);

@@ -1,5 +1,5 @@
 export interface EventRecord {
-  event_id: number | null;
+  event_id: string | null;
   source_url: string | null;
   title: string | null;
   subtitle: string | null;
