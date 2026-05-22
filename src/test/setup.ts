@@ -34,6 +34,7 @@ vi.mock("next/link", () => ({
 vi.mock("next/font/google", () => ({
   Geist: () => ({ variable: "--font-geist-sans", className: "geist" }),
   Geist_Mono: () => ({ variable: "--font-geist-mono", className: "geist-mono" }),
+  "Nerko One": () => ({ variable: "--font-nerko-one", className: "nerko-one" }),
 }));
 
 vi.mock("@mantine/core/styles.css", () => ({}));

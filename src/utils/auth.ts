@@ -48,7 +48,7 @@ export function isLoggedIn(): boolean {
 }
 
 export function setSession(): void {
-  setCookie(SESSION_COOKIE, "1", 1);
+  setCookie(SESSION_COOKIE, "1", 365);
 }
 
 export function clearSession(): void {

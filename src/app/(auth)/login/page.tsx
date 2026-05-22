@@ -1,46 +1,77 @@
 "use client";
 
-import { getStoredCredentials, hashPassword, isLoggedIn, setSession } from "@utils/auth";
+import { Alert, Button, Stack, Text, Title } from "@mantine/core";
+import { getStoredCredentials, hashPassword, setSession } from "@utils/auth";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-
+import { useState } from "react";
+import { Input, MultiForm, PasswordInput } from "~/app/components/Forms";
 
 export default function LoginPage() {
-    const router = useRouter();
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        if (isLoggedIn()) {
-            router.replace("/2025");
-        } else if (!getStoredCredentials()) {
-            router.replace("/register");
-        }
-    }, [router]);
+  async function handleLogin(values: Record<string, unknown>) {
+    setError("");
+    setLoading(true);
 
-    async function handleLogin() {
-        setError("");
-        const stored = getStoredCredentials();
-        if (!stored) {
-            router.replace("/register");
-            return;
-        }
+    const username = typeof values.username === "string" ? values.username.trim() : "";
+    const password = typeof values.password === "string" ? values.password : "";
 
-        setLoading(true);
-        const passwordHash = await hashPassword(password);
-        if (username.trim() === stored.username && passwordHash === stored.passwordHash) {
-            setSession();
-            router.replace("/2025");
-            return;
-        }
-
-        setError("Usuário ou senha incorretos.");
-        setLoading(false);
+    if (!username || !password) {
+      setError("Usuário e senha são obrigatórios.");
+      setLoading(false);
+      return;
     }
 
-    return (
-        <div>Login</div>
-    );
+    const stored = getStoredCredentials();
+    if (!stored) {
+      setError("Nenhuma conta encontrada neste dispositivo. Faça seu cadastro primeiro.");
+      setLoading(false);
+      return;
+    }
+
+    const passwordHash = await hashPassword(password);
+    const isValid = stored.username === username && stored.passwordHash === passwordHash;
+
+    if (!isValid) {
+      setError("Usuário ou senha inválidos.");
+      setLoading(false);
+      return;
+    }
+
+    setSession();
+    router.push("/2026");
+  }
+
+  return (
+    // Mantine Stack usage: https://mantine.dev/core/stack/#usage
+    <Stack h="100%" gap="32" w="100%" align="center" justify="center" p="lg">
+      {/* Mantine Title usage: https://mantine.dev/core/title/#usage */}
+      <Title order={1}>Olá de novo!</Title>
+      <MultiForm initialValues={{ username: "", password: "" }} onSubmit={handleLogin}>
+        <Input
+          name="username"
+          label="Como gosta de ser chamado?"
+          placeholder="Digite seu nome"
+          withAsterisk
+        />
+        <PasswordInput name="password" label="Senha" placeholder="Digite sua senha" withAsterisk />
+        {error && (
+          // Mantine Alert usage: https://mantine.dev/core/alert/#usage
+          <Alert color="red" title="Erro de autenticação" w="100%">
+            {error}
+          </Alert>
+        )}
+        {/* Mantine Button usage: https://mantine.dev/core/button/#usage */}
+        <Button type="submit" loading={loading} w="100%">
+          Login
+        </Button>
+      </MultiForm>
+      {/* Mantine Text usage: https://mantine.dev/core/text/#usage */}
+      <Text size="sm" c="dimmed">
+        Não tem conta? Acesse /register
+      </Text>
+    </Stack>
+  );
 }
