@@ -1,6 +1,8 @@
 import type {
   MantineTheme,
   PasswordInputFactory,
+  SelectFactory,
+  SelectProps,
   StylesApiProps,
   TextInputFactory,
   TextInputProps,
@@ -49,3 +51,24 @@ export const PasswordInput = {
       },
     }) satisfies StylesApiProps<PasswordInputFactory>["styles"],
 };
+
+export const Select = {
+  defaultProps: {
+    variant: "default",
+    size: "md",
+    radius: "md",
+    w: "100%",
+  } satisfies SelectProps,
+
+  styles: (theme: MantineTheme) => ({
+
+    root: {
+      backgroundColor: "rgba(0, 0, 0, 0.22)",
+      borderColor: theme.colors.violet[6],
+      color: theme.white,
+      "--input-color": theme.white,
+      "--input-placeholder-color": theme.colors.primary[8],
+    }
+
+  }) satisfies StylesApiProps<SelectFactory>["styles"],
+} 
