@@ -1,7 +1,7 @@
 import { Container, Stack } from "@mantine/core";
+import { bgGraph, fullLogo } from "@public/images";
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { bgGraph, fullLogo } from "../../../public/images";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
