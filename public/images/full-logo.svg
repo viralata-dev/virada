@@ -1,5 +1,5 @@
 <svg width="247" height="143" viewBox="0 0 247 143" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <title>Minha Virada Cultural - Logo</title>
+    <title>Virada Cultural 2026</title>
     <g filter="url(#filter0_n_17_253)">
         <g clip-path="url(#clip0_17_253)">
             <path
@@ -65,7 +65,7 @@
                     tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " />
             </feComponentTransfer>
             <feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped" />
-            <feFlood flood-color="rgba(0, 0, 0, 0.25)" result="color1Flood" />
+            <feFlood flood-color="rgba(0, 0, 0, 0.2)" result="color1Flood" />
             <feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1" />
             <feMerge result="effect1_noise_17_253">
                 <feMergeNode in="shape" />
