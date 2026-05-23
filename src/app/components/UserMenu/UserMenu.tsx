@@ -1,7 +1,9 @@
 "use client";
-import { Burger, Menu } from "@mantine/core";
+import { Menu } from "@mantine/core";
 import { clearSession } from "@utils/auth";
 import { useRouter } from "next/navigation";
+import { ActionCircleButton } from "../ActionButton";
+
 
 export const UserMenu = () => {
   const router = useRouter();
@@ -15,7 +17,7 @@ export const UserMenu = () => {
     // Mantine Menu docs: https://mantine.dev/core/menu/#usage
     <Menu>
       <Menu.Target>
-        <Burger color="pink" />
+        <ActionCircleButton variant="menu" ariaLabel="Menu do usuário" />
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Item>Profile</Menu.Item>
