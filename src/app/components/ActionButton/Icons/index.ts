@@ -1,3 +1,4 @@
+export { default as ArrowLeftIcon } from "./arrow-left.svg";
 export { default as BurgerIcon } from "./burger.svg";
 export { default as CheckIcon } from "./check.svg";
 export { default as CloseIcon } from "./close.svg";

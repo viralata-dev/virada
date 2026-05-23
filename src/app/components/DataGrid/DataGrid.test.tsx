@@ -142,4 +142,48 @@ describe("DataGrid filter wiring", () => {
             expect(screen.getByText("2 Eventos encontrados!")).toBeInTheDocument();
         });
     });
+
+    it("cascades local options from selected category", async () => {
+        renderWithMantine();
+
+        await userEvent.click(screen.getByRole("button", { name: "Abrir filtros" }));
+
+        const categoryInput = await screen.findByPlaceholderText("Selecione categorias...");
+        await userEvent.click(categoryInput);
+        await userEvent.click(await screen.findByText("Musica (1)"));
+
+        const localInput = await screen.findByPlaceholderText("Selecione locais...");
+        await userEvent.click(localInput);
+
+        await waitFor(() => {
+            expect(screen.getByText("Local A (1)")).toBeInTheDocument();
+            expect(screen.getByText("Local B (0)")).toBeInTheDocument();
+        });
+    });
+
+    it("allows selecting multiple region values after selecting one", async () => {
+        renderWithMantine();
+
+        await userEvent.click(screen.getByRole("button", { name: "Abrir filtros" }));
+
+        const regionInput = await screen.findByPlaceholderText("Selecione regioes...");
+        await userEvent.click(regionInput);
+        await userEvent.click(await screen.findByText("Centro (1)"));
+
+        await waitFor(() => {
+            expect(screen.getByText("Evento Sabado")).toBeInTheDocument();
+            expect(screen.queryByText("Evento Domingo")).not.toBeInTheDocument();
+            expect(screen.getByText("1 Eventos encontrados!")).toBeInTheDocument();
+        });
+
+        await userEvent.click(regionInput);
+        await userEvent.type(regionInput, "Zona");
+        await userEvent.click(await screen.findByText("Zona Sul (0)"));
+
+        await waitFor(() => {
+            expect(screen.getByText("Evento Sabado")).toBeInTheDocument();
+            expect(screen.getByText("Evento Domingo")).toBeInTheDocument();
+            expect(screen.getByText("2 Eventos encontrados!")).toBeInTheDocument();
+        });
+    });
 });

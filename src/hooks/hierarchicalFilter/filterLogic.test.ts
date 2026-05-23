@@ -16,6 +16,7 @@ function makeEvent(overrides: Partial<NormalizedEvent>): NormalizedEvent {
         region: overrides.region ?? "Region",
         startDate: overrides.startDate ?? "2026-05-24",
         startTime: overrides.startTime ?? "10:00",
+        endDate: overrides.endDate ?? "2026-05-24",
         endTime: overrides.endTime ?? "11:00",
         startHour: overrides.startHour ?? 10,
         endHour: overrides.endHour ?? 11,

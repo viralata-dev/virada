@@ -14,6 +14,7 @@ export interface NormalizedEvent {
   region: string;
   startDate: string;
   startTime: string;
+  endDate: string;
   endTime: string;
   startHour: number;
   endHour: number;
@@ -54,6 +55,7 @@ export function normalizeEvent(record: EventRecord, index: number): NormalizedEv
     region: record.region?.trim() ?? "Unknown",
     startDate: record.start_date,
     startTime: record.start_time ?? "00:00",
+    endDate: record.end_date ?? record.start_date,
     endTime: record.end_time ?? "23:59",
     startHour,
     endHour: endHour >= startHour ? endHour : 23,
@@ -62,6 +64,71 @@ export function normalizeEvent(record: EventRecord, index: number): NormalizedEv
     address: record.address ?? "",
     imageUrl: record.image_url,
   };
+}
+
+export type EventTimelineStatus = "past" | "live" | "upcoming";
+
+export interface EventTimeRange {
+  start: Date;
+  end: Date;
+}
+
+export function parseEventDateTime(dateStr: string, timeStr: string): Date | null {
+  const dateMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const timeMatch = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+
+  if (!dateMatch || !timeMatch) {
+    return null;
+  }
+
+  const year = Number.parseInt(dateMatch[1] ?? "", 10);
+  const month = Number.parseInt(dateMatch[2] ?? "", 10);
+  const day = Number.parseInt(dateMatch[3] ?? "", 10);
+  const hour = Number.parseInt(timeMatch[1] ?? "", 10);
+  const minute = Number.parseInt(timeMatch[2] ?? "", 10);
+
+  if (
+    [year, month, day, hour, minute].some((value) => Number.isNaN(value))
+  ) {
+    return null;
+  }
+
+  return new Date(year, month - 1, day, hour, minute, 0, 0);
+}
+
+export function getEventTimeRange(event: Pick<NormalizedEvent, "startDate" | "startTime" | "endDate" | "endTime">): EventTimeRange | null {
+  const start = parseEventDateTime(event.startDate, event.startTime);
+  const end = parseEventDateTime(event.endDate, event.endTime);
+
+  if (!start || !end) {
+    return null;
+  }
+
+  return { start, end };
+}
+
+export function getEventTimelineStatus(
+  event: Pick<NormalizedEvent, "startDate" | "startTime" | "endDate" | "endTime">,
+  now: Date = new Date()
+): EventTimelineStatus {
+  const range = getEventTimeRange(event);
+  if (!range) {
+    return "upcoming";
+  }
+
+  if (now < range.start) {
+    return "upcoming";
+  }
+
+  if (now > range.end) {
+    return "past";
+  }
+
+  return "live";
+}
+
+export function getTimelineMinutesBetween(start: Date, end: Date): number {
+  return Math.max(0, Math.round((end.getTime() - start.getTime()) / 60000));
 }
 
 export function buildFilterIndex(events: NormalizedEvent[]): FilterIndex {

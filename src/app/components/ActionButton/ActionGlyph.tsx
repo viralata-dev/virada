@@ -1,8 +1,20 @@
 import { Box } from "@mantine/core";
 import Image from "next/image";
-import { BurgerIcon, CheckIcon, CloseIcon, FilterIcon, MapPinIcon, MinusIcon, PlusIcon, StarFilledIcon, StarOutlineIcon } from "./Icons";
+import {
+    ArrowLeftIcon,
+    BurgerIcon,
+    CheckIcon,
+    CloseIcon,
+    FilterIcon,
+    MapPinIcon,
+    MinusIcon,
+    PlusIcon,
+    StarFilledIcon,
+    StarOutlineIcon,
+} from "./Icons";
 
 export type ActionVariant =
+    | "back"
     | "favorite"
     | "favorite-empty"
     | "close"
@@ -17,6 +29,14 @@ export type ActionVariant =
 
 
 export function ActionGlyph({ variant }: { variant: ActionVariant }) {
+    if (variant === "back") {
+        return (
+            <Box >
+                <Image src={ArrowLeftIcon} alt="Voltar" width={20} height={20} />
+            </Box >
+        );
+    }
+
     if (variant === "favorite") {
         return (
             <Box >

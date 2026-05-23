@@ -37,6 +37,33 @@ export function useHierarchicalFilter(rawEvents: EventRecord[]) {
 
   const index = useMemo(() => buildFilterIndex(normalizedEvents), [normalizedEvents]);
 
+  const allCategoryOptions = useMemo(() => {
+    return Array.from(index.categoryToEventIds.entries())
+      .map(([category, ids]) => ({
+        category,
+        count: ids.size,
+      }))
+      .sort((a, b) => a.category.localeCompare(b.category));
+  }, [index]);
+
+  const allRegionOptions = useMemo(() => {
+    return Array.from(index.regionToEventIds.entries())
+      .map(([region, ids]) => ({
+        region,
+        count: ids.size,
+      }))
+      .sort((a, b) => a.region.localeCompare(b.region));
+  }, [index]);
+
+  const allVenueOptions = useMemo(() => {
+    return Array.from(index.venueToEventIds.entries())
+      .map(([venue, ids]) => ({
+        venue,
+        count: ids.size,
+      }))
+      .sort((a, b) => a.venue.localeCompare(b.venue));
+  }, [index]);
+
   const defaultCategorySelection = useMemo(() => {
     const hasDefaultCategory = normalizedEvents.some(
       (event) => event.category === DEFAULT_CATEGORY
@@ -230,6 +257,9 @@ export function useHierarchicalFilter(rawEvents: EventRecord[]) {
     clearAllFilters: onClearAll,
     handleSelectAllVisibleVenues,
     handleDayToggle,
+    allCategoryOptions,
+    allRegionOptions,
+    allVenueOptions,
     ...filterResult,
     filterResetKey,
   };

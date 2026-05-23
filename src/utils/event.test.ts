@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { dateToNumeric, formatDuration, isEventHappening, timeToHour } from "../utils/event";
+import {
+  dateToNumeric,
+  formatDuration,
+  getEventTimelineStatus,
+  getEventTimeRange,
+  isEventHappening,
+  timeToHour,
+} from "../utils/event";
 
 describe("timeToHour", () => {
   it("converts '18h' to 18", () => expect(timeToHour("18h")).toBe(18));
@@ -71,5 +78,43 @@ describe("isEventHappening", () => {
     // No date: only time check matters
     const now = makeDate(24, 5, 19, 0);
     expect(isEventHappening("18h", 120, undefined, now)).toBe(true);
+  });
+});
+
+describe("timeline helpers", () => {
+  const event = {
+    startDate: "2026-05-24",
+    startTime: "10:00",
+    endDate: "2026-05-24",
+    endTime: "12:00",
+  };
+
+  const assertLocalDate = (date: Date | undefined, hour: number, minute: number) => {
+    expect(date).toBeDefined();
+    expect(date?.getFullYear()).toBe(2026);
+    expect(date?.getMonth()).toBe(4);
+    expect(date?.getDate()).toBe(24);
+    expect(date?.getHours()).toBe(hour);
+    expect(date?.getMinutes()).toBe(minute);
+  };
+
+  it("parses a start and end date range", () => {
+    const range = getEventTimeRange(event);
+
+    assertLocalDate(range?.start, 10, 0);
+    assertLocalDate(range?.end, 12, 0);
+  });
+
+  it("classifies a past, live, or upcoming event", () => {
+    const makeLocalDate = (hour: number, minute: number) => {
+      const date = new Date();
+      date.setFullYear(2026, 4, 24);
+      date.setHours(hour, minute, 0, 0);
+      return date;
+    };
+
+    expect(getEventTimelineStatus(event, makeLocalDate(9, 59))).toBe("upcoming");
+    expect(getEventTimelineStatus(event, makeLocalDate(11, 0))).toBe("live");
+    expect(getEventTimelineStatus(event, makeLocalDate(12, 1))).toBe("past");
   });
 });

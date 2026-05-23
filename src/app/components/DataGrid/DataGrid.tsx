@@ -1,6 +1,7 @@
 "use client";
 
 import data from "@data/events.json";
+import { useFavoriteEvents } from "@hooks/useFavoriteEvents";
 import { Group, Paper, Stack, Text, Title } from "@mantine/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useHierarchicalFilter } from "~/hooks/useHierarchicalFilter";
@@ -16,6 +17,7 @@ const EVENTS_BATCH_SIZE = 40;
 export const DataGrid = () => {
   const filters = useHierarchicalFilter(data as EventRecord[]);
   const { filteredEvents, totalCount, filterResetKey } = filters;
+  const { isFavorite, toggleFavorite } = useFavoriteEvents();
 
   const [isFiltersDrawerOpened, setIsFiltersDrawerOpened] = useState(false);
   const [visibleCount, setVisibleCount] = useState(INITIAL_EVENTS_BATCH);
@@ -112,7 +114,12 @@ export const DataGrid = () => {
 
         <Stack gap="md" mt="md">
           {visibleEvents.map((event) => (
-            <NormalizedEventCard key={event.id} event={event} />
+            <NormalizedEventCard
+              key={event.id}
+              event={event}
+              isFavorite={isFavorite(event.id)}
+              onToggleFavorite={toggleFavorite}
+            />
           ))}
         </Stack>
       </Paper>
