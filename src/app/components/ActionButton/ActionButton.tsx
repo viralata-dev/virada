@@ -28,7 +28,7 @@ export function ActionSimpleButton({
   ariaLabel,
 }: ActionButtonProps) {
   return (
-    <ActionIcon variant="light" onClick={onClick} aria-label={ariaLabel}>
+    <ActionIcon variant="transparent" onClick={onClick} aria-label={ariaLabel}>
       <ActionGlyph variant={variant} />
     </ActionIcon>);
 }

@@ -52,8 +52,15 @@ vi.mock("./DataCard", () => ({
 }));
 
 vi.mock("../ActionButton", () => ({
-    ActionCircleButton: ({ ariaLabel }: { ariaLabel: string }) => (
-        <button type="button">{ariaLabel}</button>
+    ActionCircleButton: ({ ariaLabel, onClick }: { ariaLabel: string; onClick?: () => void }) => (
+        <button type="button" aria-label={ariaLabel} onClick={onClick}>
+            {ariaLabel}
+        </button>
+    ),
+    ActionSimpleButton: ({ ariaLabel, onClick }: { ariaLabel: string; onClick?: () => void }) => (
+        <button type="button" aria-label={ariaLabel} onClick={onClick}>
+            {ariaLabel}
+        </button>
     ),
 }));
 
@@ -74,12 +81,65 @@ describe("DataGrid filter wiring", () => {
             expect(screen.getByText("Evento Domingo")).toBeInTheDocument();
         });
 
-        await userEvent.click(screen.getByLabelText("2026-05-25 (1)"));
+        await userEvent.click(screen.getByRole("button", { name: "Abrir filtros" }));
+
+        const day24Button = await screen.findByRole("button", {
+            name: "Dia 2026-05-24 (1)",
+        });
+        const day25Button = await screen.findByRole("button", {
+            name: "Dia 2026-05-25 (1)",
+        });
+
+        await userEvent.click(day25Button);
 
         await waitFor(() => {
             expect(screen.queryByText("Evento Sabado")).not.toBeInTheDocument();
             expect(screen.getByText("Evento Domingo")).toBeInTheDocument();
             expect(screen.getByText("1 Eventos encontrados!")).toBeInTheDocument();
+        });
+
+        // Both day filters stay visible and both can be selected together.
+        expect(screen.getByRole("button", { name: "Dia 2026-05-24 (1)" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Dia 2026-05-25 (1)" })).toBeInTheDocument();
+
+        await userEvent.click(day24Button);
+
+        await waitFor(() => {
+            expect(screen.getByText("Evento Sabado")).toBeInTheDocument();
+            expect(screen.getByText("Evento Domingo")).toBeInTheDocument();
+            expect(screen.getByText("2 Eventos encontrados!")).toBeInTheDocument();
+        });
+    });
+
+    it("allows selecting multiple category values with search after first selection", async () => {
+        renderWithMantine();
+
+        await waitFor(() => {
+            expect(screen.getByText("Evento Sabado")).toBeInTheDocument();
+            expect(screen.getByText("Evento Domingo")).toBeInTheDocument();
+        });
+
+        await userEvent.click(screen.getByRole("button", { name: "Abrir filtros" }));
+
+        const categoryInput = await screen.findByPlaceholderText("Selecione categorias...");
+
+        await userEvent.click(categoryInput);
+        await userEvent.click(await screen.findByText("Musica (1)"));
+
+        await waitFor(() => {
+            expect(screen.getByText("Evento Sabado")).toBeInTheDocument();
+            expect(screen.queryByText("Evento Domingo")).not.toBeInTheDocument();
+            expect(screen.getByText("1 Eventos encontrados!")).toBeInTheDocument();
+        });
+
+        await userEvent.click(categoryInput);
+        await userEvent.type(categoryInput, "Tea");
+        await userEvent.click(await screen.findByText("Teatro (1)"));
+
+        await waitFor(() => {
+            expect(screen.getByText("Evento Sabado")).toBeInTheDocument();
+            expect(screen.getByText("Evento Domingo")).toBeInTheDocument();
+            expect(screen.getByText("2 Eventos encontrados!")).toBeInTheDocument();
         });
     });
 });

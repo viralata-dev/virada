@@ -3,7 +3,7 @@
 import { createTheme } from "@mantine/core";
 import { Button } from "./button";
 import { colors, defaultGradient, primaryColor } from "./colors";
-import { Input, PasswordInput } from "./form";
+import { Input, MultiSelect, PasswordInput } from "./form";
 import { Title, typography } from "./typography";
 
 export const theme = createTheme({
@@ -14,6 +14,7 @@ export const theme = createTheme({
   components: {
     TextInput: Input,
     PasswordInput,
+    MultiSelect,
     Title,
     Button,
   },

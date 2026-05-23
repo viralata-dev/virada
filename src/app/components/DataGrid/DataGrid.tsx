@@ -17,6 +17,7 @@ export const DataGrid = () => {
   const filters = useHierarchicalFilter(data as EventRecord[]);
   const { filteredEvents, totalCount, filterResetKey } = filters;
 
+  const [isFiltersDrawerOpened, setIsFiltersDrawerOpened] = useState(false);
   const [visibleCount, setVisibleCount] = useState(INITIAL_EVENTS_BATCH);
   const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null);
 
@@ -64,7 +65,11 @@ export const DataGrid = () => {
 
   return (
     <Stack gap="md">
-      <HierarchicalFilters filters={filters} />
+      <HierarchicalFilters
+        filters={filters}
+        opened={isFiltersDrawerOpened}
+        onClose={() => setIsFiltersDrawerOpened(false)}
+      />
       <Paper
         p="md"
         radius={EVENTS_2026_TOKENS.radius.content}
@@ -93,7 +98,12 @@ export const DataGrid = () => {
           </Stack>
 
           <Stack gap={6} align="center">
-            <ActionCircleButton variant="filter" size={35} ariaLabel="Abrir filtros" />
+            <ActionCircleButton
+              variant="filter"
+              size={35}
+              ariaLabel="Abrir filtros"
+              onClick={() => setIsFiltersDrawerOpened(true)}
+            />
             <Text c={EVENTS_2026_TOKENS.colors.textPrimary} fz={12}>
               Filtrar
             </Text>

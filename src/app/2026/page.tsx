@@ -16,7 +16,16 @@ export default function Page2026() {
   }, [router]);
 
   return (
-    <Container component="main" py="md" px="xs" fs="xs" maw={393}>
+    // Mantine Container docs: https://mantine.dev/core/container/#usage
+    <Container
+      component="main"
+      py="md"
+      px="xs"
+      fs="xs"
+      h="100%"
+      style={{ overflowY: "auto", overscrollBehavior: "contain" }}
+      pos="relative"
+    >
       <DataGrid />
     </Container>
   );

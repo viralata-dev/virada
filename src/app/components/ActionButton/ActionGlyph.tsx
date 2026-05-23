@@ -1,15 +1,18 @@
 import { Box } from "@mantine/core";
 import Image from "next/image";
-import { BurgerIcon, FilterIcon, MapPinIcon, MinusIcon, PlusIcon, StarFilledIcon, StarOutlineIcon } from "./Icons";
+import { BurgerIcon, CheckIcon, CloseIcon, FilterIcon, MapPinIcon, MinusIcon, PlusIcon, StarFilledIcon, StarOutlineIcon } from "./Icons";
 
 export type ActionVariant =
     | "favorite"
     | "favorite-empty"
+    | "close"
+    | "expand"
     | "filter"
     | "menu"
     | "location"
     | "plus"
     | "minus"
+    | "check"
     | "default";
 
 
@@ -66,6 +69,29 @@ export function ActionGlyph({ variant }: { variant: ActionVariant }) {
         return (
             <Box >
                 <Image src={MinusIcon} alt="Remover" width={20} height={20} />
+            </Box >
+        );
+    }
+
+    if (variant === "expand") {
+        return (
+            <Box >
+                ⌄
+            </Box >
+        );
+    }
+
+    if (variant === "close") {
+        return (
+            <Box >
+                <Image src={CloseIcon} alt="Fechar" width={20} height={20} />
+            </Box >
+        );
+    }
+    if (variant === "check") {
+        return (
+            <Box >
+                <Image src={CheckIcon} alt="Aceitar" width={20} height={20} />
             </Box >
         );
     }
