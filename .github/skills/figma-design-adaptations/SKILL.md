@@ -46,28 +46,38 @@ in this codebase, preserving Mantine patterns, responsiveness, and accessibility
 - Retrieve structure and screenshot/context from Figma tools.
 - Note design tokens: spacing, typography, colors, radius, shadows, and states.
 
-3. Map design to project primitives first
+3. Harvest design links and used assets
+- Fetch all design links and references for the selected node/screen: component docs/links,
+  Code Connect links, component instance references, variable references (especially color
+  variables), and style references.
+- Build a "used assets" list containing only components and variants actually present in the
+  design scope.
+
+4. Map design to project primitives first
 - Prefer existing components and hooks over creating new ones.
 - Map visual values to Mantine theme tokens from `src/theme/`.
 - If a token is missing but broadly reusable, add it in theme files instead of hardcoding.
+- For each used design component, create or adapt the corresponding code component.
+- Implement only variants used in the design scope; do not add unused variants.
 
-4. Implement with maintainable structure
+5. Implement with maintainable structure
 - Keep changes focused and surgical.
 - Preserve project conventions and data contracts.
 - Keep UI responsive without introducing one-off CSS unless necessary.
 
-5. Handle adaptation branches
+6. Handle adaptation branches
 - If design and existing UX conflict: preserve behavior and adapt visuals incrementally.
 - If a design element is unsupported in Mantine props: use minimal local styling.
 - If content density differs on small screens: prioritize readability over strict pixel lock.
 
-6. Validate before finishing
+7. Validate before finishing
 - Run validation commands in this order: `tsc`, `pnpm lint`, `pnpm format`.
 - Verify major breakpoints and interaction states.
 - Confirm accessibility basics: focus visibility, semantic structure, contrast, touch targets.
 
-7. Communicate result
+8. Communicate result
 - Summarize what was implemented and any deliberate deviations.
+- Include the extracted used-assets list (component links, variable links, and variant list).
 - List remaining gaps requiring designer/product confirmation.
 
 ## Decision Points
@@ -75,6 +85,10 @@ in this codebase, preserving Mantine patterns, responsiveness, and accessibility
 - Reuse vs create:
   Reuse existing component when behavior is close and styling can be adapted safely.
   Create new component only when reuse causes complexity or regressions.
+
+- Variant scope:
+  Implement only variants used by the selected design scope.
+  Add extra variants only if explicitly requested.
 
 - Theme token vs hardcoded value:
   Add or reuse theme token when value is reused or part of design language.
@@ -87,9 +101,11 @@ in this codebase, preserving Mantine patterns, responsiveness, and accessibility
 
 1. Matches Figma design intent at target breakpoints
 2. Uses Mantine + project conventions
-3. Validation commands succeed: `tsc`, `pnpm lint`, `pnpm format`
-4. Accessibility basics covered for changed UI
-5. Clear note of deviations, assumptions, and follow-ups
+3. All used design components are mapped to created/adapted code components
+4. Only used variants are implemented for each mapped component
+5. Validation commands succeed: `tsc`, `pnpm lint`, `pnpm format`
+6. Accessibility basics covered for changed UI
+7. Clear note of deviations, assumptions, and follow-ups
 
 ## Example Prompts
 

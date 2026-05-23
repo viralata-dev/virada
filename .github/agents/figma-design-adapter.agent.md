@@ -28,28 +28,38 @@ conventions, responsiveness, and accessibility.
 - Use Figma context/screenshot tools to capture structure, hierarchy, and visual intent.
 - Extract typography, spacing, colors, radius, and interaction states.
 
-3. Map to existing codebase primitives
+3. Harvest design links and used assets
+- Fetch all relevant design links and references in scope: component links/docs,
+  Code Connect mappings, component instance references, variable links (including color
+  variables), and style links.
+- Build an explicit used-assets list with only components and variants present in scope.
+
+4. Map to existing codebase primitives
 - Reuse existing Mantine components and project hooks first.
 - Reuse or extend theme tokens in src/theme when values are reusable.
+- For each used design component, create or adapt the matching code component.
+- Implement only variants used in the selected design scope.
 
-4. Implement focused changes
+5. Implement focused changes
 - Keep edits surgical.
 - Preserve existing behavior unless explicitly changed by requirements.
 
-5. Resolve adaptation decisions
+6. Resolve adaptation decisions
 - Prefer design intent parity over strict pixel-perfect output.
 - If visual fidelity conflicts with usability on smaller screens, prioritize readability and interaction.
 
-6. Mandatory validation
+7. Mandatory validation
 - Run: tsc
 - Run: pnpm lint
 - Run: pnpm format
 
-7. Output summary
+8. Output summary
 - Report changed files, design-intent deviations, and any follow-up questions.
+- Include the extracted used-assets list and the implemented variant list per component.
 
 ## Constraints
 
 - Do not introduce unrelated dependencies.
 - Do not hardcode reusable style values that should be theme tokens.
 - Do not rewrite unrelated sections of the UI.
+- Do not implement component variants that are not used in the selected design scope.
