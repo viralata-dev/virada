@@ -499,6 +499,17 @@ export default function FavoritesPage() {
                 title="Detalhes do evento"
                 size="lg"
                 centered
+                styles={{
+                    content: {
+                        backgroundColor: EVENTS_2026_TOKENS.colors.bgDark,
+                    },
+                    header: {
+                        backgroundColor: EVENTS_2026_TOKENS.colors.bgDark,
+                    },
+                    title: {
+                        color: EVENTS_2026_TOKENS.colors.textPrimary,
+                    },
+                }}
             >
                 {selectedEvent && (
                     <NormalizedEventCard

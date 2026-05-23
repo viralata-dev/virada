@@ -1,10 +1,17 @@
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
+import type { Viewport } from "next";
 import { Geist, Geist_Mono, Nerko_One } from "next/font/google";
 import type { ReactNode } from "react";
 import { theme } from "../theme";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  interactiveWidget: "resizes-content",
+};
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
