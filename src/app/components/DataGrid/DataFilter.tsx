@@ -7,7 +7,7 @@ import {
     RangeSlider,
     ScrollArea,
     Stack,
-    Text
+    Text,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { ActionSimpleButton } from "../ActionButton";
@@ -220,6 +220,8 @@ export function HierarchicalFilters({ filters, opened, onClose }: DataFilterProp
         onVenuesChange(new Set(allVisibleVenueValues));
     };
 
+    const SELECT_ALL_VENUES_OPTION = "__all_visible_venues__";
+
     return (
         // Mantine Drawer docs: https://mantine.dev/core/drawer/#usage
         <Drawer
@@ -249,11 +251,10 @@ export function HierarchicalFilters({ filters, opened, onClose }: DataFilterProp
                     overflowY: "auto",
                     scrollbarWidth: "thin",
                     scrollbarColor: `#63E6BE #231a36`,
-                    scrollBehavior: "smooth"
+                    scrollBehavior: "smooth",
                 },
             }}
         >
-
             <Stack gap="md">
                 <Group justify="space-between" align="center">
                     {/* Mantine Text docs: https://mantine.dev/core/text/#usage */}
@@ -262,17 +263,27 @@ export function HierarchicalFilters({ filters, opened, onClose }: DataFilterProp
                     </Text>
                     <Group gap="xs">
                         <ActionSimpleButton variant="check" ariaLabel="Aceitar filtros" onClick={onClose} />
-                        <ActionSimpleButton variant="close" ariaLabel="Fechar filtros" onClick={() => {
-                            onClearAll();
-                            onClose();
-                        }} />
+                        <ActionSimpleButton
+                            variant="close"
+                            ariaLabel="Fechar filtros"
+                            onClick={() => {
+                                onClearAll();
+                                onClose();
+                            }}
+                        />
                     </Group>
-
                 </Group>
             </Stack>
             {/* Mantine ScrollArea docs: https://mantine.dev/core/scroll-area/#usage */}
-            <ScrollArea p="md" pb={0} h="calc(90dvh - 64px)" type="scroll" offsetScrollbars overscrollBehavior="contain" scrollbarSize={6}>
-
+            <ScrollArea
+                p="md"
+                pb={0}
+                h="calc(90dvh - 64px)"
+                type="scroll"
+                offsetScrollbars
+                overscrollBehavior="contain"
+                scrollbarSize={6}
+            >
                 {/* https://mantine.dev/core/collapse/#usage */}
 
                 <Stack gap="lg">
@@ -410,24 +421,23 @@ export function HierarchicalFilters({ filters, opened, onClose }: DataFilterProp
                             <Text fw={600} size="sm">
                                 Local
                             </Text>
-                            {/* https://mantine.dev/core/button/#usage */}
-                            <Group gap="xs">
-                                <Button
-                                    size="xs"
-                                    variant={allVisibleVenuesSelected ? "filled" : "light"}
-                                    onClick={handleSelectAllVisibleVenues}
-                                >
-                                    Selecionar todos
-                                </Button>
-                                <Button size="xs" variant="subtle" onClick={() => onVenuesChange(new Set())}>
-                                    Limpar locais
-                                </Button>
-                            </Group>
                             {/* https://mantine.dev/core/multi-select/#usage */}
                             <MultiSelect
-                                data={venuesData}
+                                data={[
+                                    {
+                                        value: SELECT_ALL_VENUES_OPTION,
+                                        label: allVisibleVenuesSelected
+                                            ? "Todos os locais selecionados"
+                                            : "Selecionar todos",
+                                    },
+                                    ...venuesData,
+                                ]}
                                 value={Array.from(selectedVenues)}
                                 onChange={(values) => {
+                                    if (values.includes(SELECT_ALL_VENUES_OPTION)) {
+                                        handleSelectAllVisibleVenues();
+                                        return;
+                                    }
                                     onVenuesChange(new Set(values));
                                 }}
                                 placeholder="Selecione locais..."
@@ -437,8 +447,7 @@ export function HierarchicalFilters({ filters, opened, onClose }: DataFilterProp
                         </Stack>
                     )}
                 </Stack>
-
             </ScrollArea>
-        </Drawer >
+        </Drawer>
     );
 }

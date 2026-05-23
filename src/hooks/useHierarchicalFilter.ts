@@ -19,6 +19,8 @@ import { applyVenueFilter } from "./hierarchicalFilter/venueFilter";
 
 export type { FacetOptions, FilteredResult, HierarchicalFilterState, TimePreset };
 
+const DEFAULT_CATEGORY = "Virada no Centro";
+
 /**
  * Custom hook for hierarchical faceted filtering with cascading dependencies.
  */
@@ -35,10 +37,19 @@ export function useHierarchicalFilter(rawEvents: EventRecord[]) {
 
   const index = useMemo(() => buildFilterIndex(normalizedEvents), [normalizedEvents]);
 
+  const defaultCategorySelection = useMemo(() => {
+    const hasDefaultCategory = normalizedEvents.some(
+      (event) => event.category === DEFAULT_CATEGORY
+    );
+
+    return hasDefaultCategory ? new Set<string>([DEFAULT_CATEGORY]) : new Set<string>();
+  }, [normalizedEvents]);
+
   const [selectedDays, setSelectedDays] = useState<Set<string>>(new Set());
   const [selectedTimePreset, setSelectedTimePreset] = useState<TimePreset>("all");
   const [customTimeRange, setCustomTimeRange] = useState<[number, number]>([0, 24]);
-  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const [selectedCategories, setSelectedCategories] =
+    useState<Set<string>>(defaultCategorySelection);
   const [selectedRegions, setSelectedRegions] = useState<Set<string>>(new Set());
   const [selectedVenues, setSelectedVenues] = useState<Set<string>>(new Set());
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
@@ -121,7 +132,7 @@ export function useHierarchicalFilter(rawEvents: EventRecord[]) {
     selectedCategories,
     selectedRegions,
     selectedVenues,
-    normalizedEvents
+    normalizedEvents,
   ]);
 
   const filterResetKey = useMemo(
@@ -174,7 +185,7 @@ export function useHierarchicalFilter(rawEvents: EventRecord[]) {
     setSelectedDays(new Set());
     setSelectedTimePreset("all");
     setCustomTimeRange([0, 24]);
-    setSelectedCategories(new Set());
+    setSelectedCategories(new Set(defaultCategorySelection));
     setSelectedRegions(new Set());
     setSelectedVenues(new Set());
     setSelectedTags(new Set());

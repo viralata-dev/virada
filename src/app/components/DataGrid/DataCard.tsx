@@ -1,11 +1,8 @@
 import type { useHierarchicalFilter } from "@hooks/useHierarchicalFilter";
-import { Box, Divider, Flex, Group, Image, Stack, Text } from "@mantine/core";
+import { Box, Collapse, Divider, Flex, Group, Image, Stack, Text } from "@mantine/core";
+import { useState } from "react";
 import { ActionCircleButton } from "../ActionButton";
-import {
-  EVENTS_2026_TOKENS,
-  EventTag,
-  FIGMA_NODE_5_6629_ASSETS,
-} from "../Events2026";
+import { EVENTS_2026_TOKENS, EventTag } from "../Events2026";
 
 function dayFromStartDate(date: string): string {
   const match = date.match(/\d{4}-\d{2}-(\d{2})/);
@@ -18,6 +15,7 @@ export function NormalizedEventCard({
   event: ReturnType<typeof useHierarchicalFilter>["filteredEvents"][0];
 }) {
   const dayLabel = dayFromStartDate(event.startDate);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     // Mantine Flex docs: https://mantine.dev/core/flex/#usage
@@ -43,13 +41,15 @@ export function NormalizedEventCard({
       </Group>
 
       {/* Mantine Image docs: https://mantine.dev/core/image/#usage */}
-      <Image
-        src={event.imageUrl ?? FIGMA_NODE_5_6629_ASSETS.eventImage}
-        alt={event.title}
-        h={124}
-        radius={EVENTS_2026_TOKENS.radius.card}
-        fit="cover"
-      />
+      {event.imageUrl && (
+        <Image
+          src={event.imageUrl}
+          alt={event.title}
+          h={124}
+          radius={EVENTS_2026_TOKENS.radius.card}
+          fit="cover"
+        />
+      )}
 
       {/* Mantine Group docs: https://mantine.dev/core/group/#usage */}
       <Group justify="space-between" align="flex-end" wrap="nowrap" gap="xs">
@@ -74,42 +74,55 @@ export function NormalizedEventCard({
             </Text>
           </Group>
           <Group gap="xs" wrap="nowrap">
-            <Text c={EVENTS_2026_TOKENS.colors.textPrimary} fz={13} fw={600} lh={1.2} truncate>
+            <Text c={EVENTS_2026_TOKENS.colors.textPrimary} fz={13} fw={600} lh={1.2}>
               {event.venue}
             </Text>
             {event.region !== "Unknown" && (
-              <Text c={EVENTS_2026_TOKENS.colors.textPrimary} fz={12} lh={1} truncate>
+              <Text c={EVENTS_2026_TOKENS.colors.textPrimary} fz={12} lh={1}>
                 {event.region}
               </Text>
             )}
           </Group>
         </Stack>
-        <ActionCircleButton variant="expand" size={32} ariaLabel="Expandir detalhes" />
+        <ActionCircleButton
+          variant={isExpanded ? "minus" : "plus"}
+          size={32}
+          onClick={() => setIsExpanded((current) => !current)}
+          ariaLabel={isExpanded ? "Ocultar detalhes" : "Expandir detalhes"}
+        />
       </Group>
 
       {event.description && (
-        // Mantine Box docs: https://mantine.dev/core/box/#usage
-        <Box
-          p="md"
-          style={{
-            backgroundColor: EVENTS_2026_TOKENS.colors.overlay,
-            borderRadius: EVENTS_2026_TOKENS.radius.card,
-          }}
-        >
-          <Stack gap="xs">
-            <Text c={EVENTS_2026_TOKENS.colors.textPrimary} fz={12} lh={1.2} lineClamp={7}>
-              {event.description}
-            </Text>
-            {/* Mantine Divider docs: https://mantine.dev/core/divider/#usage */}
-            <Divider color={EVENTS_2026_TOKENS.colors.borderOrange} />
-            <Group justify="space-between" align="center" wrap="nowrap">
-              <Text c={EVENTS_2026_TOKENS.colors.addressText} fz={10} lh={1.2} style={{ flex: 1 }}>
-                {event.address}
+        // Mantine Collapse docs: https://mantine.dev/core/collapse/#usage
+        <Collapse expanded={isExpanded} transitionDuration={220} transitionTimingFunction="ease">
+          {/* Mantine Box docs: https://mantine.dev/core/box/#usage */}
+          <Box
+            p="md"
+            style={{
+              backgroundColor: EVENTS_2026_TOKENS.colors.overlay,
+              borderRadius: EVENTS_2026_TOKENS.radius.card,
+            }}
+          >
+            <Stack gap="xs">
+              <Text c={EVENTS_2026_TOKENS.colors.textPrimary} fz={12} lh={1.2} lineClamp={7}>
+                {event.description}
               </Text>
-              <ActionCircleButton variant="location" ariaLabel="Ver localização" />
-            </Group>
-          </Stack>
-        </Box>
+              {/* Mantine Divider docs: https://mantine.dev/core/divider/#usage */}
+              <Divider color={EVENTS_2026_TOKENS.colors.borderOrange} />
+              <Group justify="space-between" align="center" wrap="nowrap">
+                <Text
+                  c={EVENTS_2026_TOKENS.colors.addressText}
+                  fz={10}
+                  lh={1.2}
+                  style={{ flex: 1 }}
+                >
+                  {event.address}
+                </Text>
+                <ActionCircleButton variant="location" ariaLabel="Ver localização" />
+              </Group>
+            </Stack>
+          </Box>
+        </Collapse>
       )}
     </Flex>
   );
