@@ -16,7 +16,7 @@ export default function Page2026() {
   }, [router]);
 
   return (
-    <Container component="main" py="md" fs="xs">
+    <Container component="main" py="md" px="xs" fs="xs" maw={393}>
       <DataGrid />
     </Container>
   );

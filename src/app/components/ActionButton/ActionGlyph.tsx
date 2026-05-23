@@ -1,5 +1,6 @@
 import { Box } from "@mantine/core";
 import Image from "next/image";
+import { BurgerIcon, FilterIcon, MapPinIcon, MinusIcon, PlusIcon, StarFilledIcon, StarOutlineIcon } from "./Icons";
 
 export type ActionVariant =
     | "favorite"
@@ -16,7 +17,7 @@ export function ActionGlyph({ variant }: { variant: ActionVariant }) {
     if (variant === "favorite") {
         return (
             <Box >
-                <Image src={require("./Icons/star-filled.svg")} alt="Favoritos" width={20} height={20} />
+                <Image src={StarFilledIcon} alt="Favoritos" width={20} height={20} />
             </Box >
         );
     }
@@ -24,7 +25,7 @@ export function ActionGlyph({ variant }: { variant: ActionVariant }) {
     if (variant === "favorite-empty") {
         return (
             <Box >
-                <Image src={require("./Icons/star-outline.svg")} alt="Favoritos" width={20} height={20} />
+                <Image src={StarOutlineIcon} alt="Favoritos" width={20} height={20} />
             </Box >
         );
     }
@@ -32,7 +33,7 @@ export function ActionGlyph({ variant }: { variant: ActionVariant }) {
     if (variant === "menu") {
         return (
             <Box >
-                <Image src={require("./Icons/burger.svg")} alt="Menu" width={20} height={20} />
+                <Image src={BurgerIcon} alt="Menu" width={20} height={20} />
             </Box >
         );
     }
@@ -40,7 +41,7 @@ export function ActionGlyph({ variant }: { variant: ActionVariant }) {
     if (variant === "location") {
         return (
             <Box >
-                <Image src={require("./Icons/map-pin.svg")} alt="Localização" width={20} height={20} />
+                <Image src={MapPinIcon} alt="Localização" width={20} height={20} />
             </Box >
         );
     }
@@ -48,7 +49,7 @@ export function ActionGlyph({ variant }: { variant: ActionVariant }) {
     if (variant === "filter") {
         return (
             <Box >
-                <Image src={require("./Icons/filter.svg")} alt="Filtrar" width={20} height={20} />
+                <Image src={FilterIcon} alt="Filtrar" width={20} height={20} />
             </Box >
         );
     }
@@ -56,7 +57,7 @@ export function ActionGlyph({ variant }: { variant: ActionVariant }) {
     if (variant === "plus") {
         return (
             <Box >
-                <Image src={require("./Icons/plus.svg")} alt="Adicionar" width={20} height={20} />
+                <Image src={PlusIcon} alt="Adicionar" width={20} height={20} />
             </Box >
         );
     }
@@ -64,7 +65,7 @@ export function ActionGlyph({ variant }: { variant: ActionVariant }) {
     if (variant === "minus") {
         return (
             <Box >
-                <Image src={require("./Icons/minus.svg")} alt="Remover" width={20} height={20} />
+                <Image src={MinusIcon} alt="Remover" width={20} height={20} />
             </Box >
         );
     }

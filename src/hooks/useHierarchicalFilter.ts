@@ -8,7 +8,6 @@ import { applyCategoryFilter } from "./hierarchicalFilter/categoryFilter";
 import { applyDayFilter } from "./hierarchicalFilter/dayFilter";
 import { computeFacetOptions } from "./hierarchicalFilter/facetOptions";
 import { applyRegionFilter } from "./hierarchicalFilter/regionFilter";
-import { applyTagFilter } from "./hierarchicalFilter/tagFilter";
 import { applyTimeFilter } from "./hierarchicalFilter/timeFilter";
 import type {
   FacetOptions,
@@ -87,12 +86,6 @@ export function useHierarchicalFilter(rawEvents: EventRecord[]) {
       index,
     });
 
-    matchedEventIds = applyTagFilter({
-      matchedEventIds,
-      selectedTags,
-      eventById,
-    });
-
     const facetOptions: FacetOptions = computeFacetOptions(
       normalizedEvents,
       matchedEventIds,
@@ -128,8 +121,7 @@ export function useHierarchicalFilter(rawEvents: EventRecord[]) {
     selectedCategories,
     selectedRegions,
     selectedVenues,
-    selectedTags,
-    normalizedEvents,
+    normalizedEvents
   ]);
 
   const filterResetKey = useMemo(
