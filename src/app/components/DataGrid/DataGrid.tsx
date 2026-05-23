@@ -14,9 +14,8 @@ const INITIAL_EVENTS_BATCH = 40;
 const EVENTS_BATCH_SIZE = 40;
 
 export const DataGrid = () => {
-  const { filteredEvents, totalCount, filterResetKey } = useHierarchicalFilter(
-    data as EventRecord[]
-  );
+  const filters = useHierarchicalFilter(data as EventRecord[]);
+  const { filteredEvents, totalCount, filterResetKey } = filters;
 
   const [visibleCount, setVisibleCount] = useState(INITIAL_EVENTS_BATCH);
   const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null);
@@ -65,7 +64,7 @@ export const DataGrid = () => {
 
   return (
     <Stack gap="md">
-      <HierarchicalFilters data={data} />
+      <HierarchicalFilters filters={filters} />
       <Paper
         p="md"
         radius={EVENTS_2026_TOKENS.radius.content}
