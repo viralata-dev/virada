@@ -14,7 +14,7 @@ import {
 } from "@utils/event";
 import Image from "next/image";
 import { useState } from "react";
-import type { EventsData } from "~/types/event";
+import type { Event, EventsData } from "~/types/event";
 
 interface EventsGridProps {
   data: EventsData;

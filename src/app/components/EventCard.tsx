@@ -2,9 +2,9 @@
 
 import { useEventHappening } from "@hooks/useEventHappening";
 import { Badge, Card, Flex, Group, Stack, Switch, Text } from "@mantine/core";
-import type { Event } from "@types/event";
 import { formatDuration, getEventCardStyle } from "@utils/event";
 import { useEffect, useState } from "react";
+import type { Event } from "~/types/event";
 
 interface EventCardProps {
   event: Event;

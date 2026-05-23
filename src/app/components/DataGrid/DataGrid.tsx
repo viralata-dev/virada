@@ -1,175 +1,126 @@
 "use client";
 
 import data from "@data/events.json";
-import { useHierarchicalFilter } from "@hooks/useHierarchicalFilter";
-import {
-    Stack,
-    Text,
-    Title
-} from "@mantine/core";
-import Image from "next/image";
+import { Group, Paper, Stack, Text, Title } from "@mantine/core";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useHierarchicalFilter } from "~/hooks/useHierarchicalFilter";
 import type { EventRecord } from "~/types/event26";
+import { ActionCircleButton } from "../ActionButton";
+import { EVENTS_2026_TOKENS } from "../Events2026";
 import { NormalizedEventCard } from "./DataCard";
+import { HierarchicalFilters } from "./DataFilter";
 
 const INITIAL_EVENTS_BATCH = 40;
 const EVENTS_BATCH_SIZE = 40;
 
 export const DataGrid = () => {
-    const {
-        selectedDays,
-        selectedTimePreset,
-        customTimeRange,
-        selectedCategories,
-        selectedRegions,
-        selectedVenues,
-        selectedTags,
-        filteredEvents,
-        totalCount,
-    } = useHierarchicalFilter(data as EventRecord[]);
+  const { filteredEvents, totalCount, filterResetKey } = useHierarchicalFilter(
+    data as EventRecord[]
+  );
 
-    const [visibleCount, setVisibleCount] = useState(INITIAL_EVENTS_BATCH);
-    const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_EVENTS_BATCH);
+  const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null);
 
-    const filterResetKey = useMemo(
-        () =>
-            JSON.stringify({
-                days: Array.from(selectedDays).sort(),
-                timePreset: selectedTimePreset,
-                timeRange: customTimeRange,
-                categories: Array.from(selectedCategories).sort(),
-                regions: Array.from(selectedRegions).sort(),
-                venues: Array.from(selectedVenues).sort(),
-                tags: Array.from(selectedTags).sort(),
-            }),
-        [
-            customTimeRange,
-            selectedCategories,
-            selectedDays,
-            selectedRegions,
-            selectedTags,
-            selectedTimePreset,
-            selectedVenues,
-        ]
-    );
+  const hasMoreEvents = visibleCount < filteredEvents.length;
 
-    const hasMoreEvents = visibleCount < filteredEvents.length;
+  const visibleEvents = useMemo(
+    () => filteredEvents.slice(0, visibleCount),
+    [filteredEvents, visibleCount]
+  );
 
-    const visibleEvents = useMemo(
-        () => filteredEvents.slice(0, visibleCount),
-        [filteredEvents, visibleCount]
-    );
+  useEffect(() => {
+    // Reset visible items when filters change.
+    void filterResetKey;
+    setVisibleCount(INITIAL_EVENTS_BATCH);
+  }, [filterResetKey]);
 
-    useEffect(() => {
-        // Reset visible items when filters change.
-        void filterResetKey;
-        setVisibleCount(INITIAL_EVENTS_BATCH);
-    }, [filterResetKey]);
+  useEffect(() => {
+    const trigger = loadMoreTriggerRef.current;
+    if (!trigger || !hasMoreEvents) {
+      return;
+    }
 
-    useEffect(() => {
-        const trigger = loadMoreTriggerRef.current;
-        if (!trigger || !hasMoreEvents) {
-            return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const firstEntry = entries[0];
+        if (!firstEntry?.isIntersecting) {
+          return;
         }
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const firstEntry = entries[0];
-                if (!firstEntry?.isIntersecting) {
-                    return;
-                }
-
-                setVisibleCount((current) => Math.min(current + EVENTS_BATCH_SIZE, filteredEvents.length));
-            },
-            {
-                root: null,
-                rootMargin: "200px",
-                threshold: 0,
-            }
-        );
-
-        observer.observe(trigger);
-
-        return () => {
-            observer.disconnect();
-        };
-    }, [filteredEvents.length, hasMoreEvents]);
-
-    const eventsByDate = useMemo(
-        () =>
-            visibleEvents.reduce((acc: Record<string, typeof visibleEvents>, event) => {
-                const date = event.startDate;
-                if (!acc[date]) {
-                    acc[date] = [];
-                }
-                acc[date].push(event);
-                return acc;
-            }, {}),
-        [visibleEvents]
+        setVisibleCount((current) => Math.min(current + EVENTS_BATCH_SIZE, filteredEvents.length));
+      },
+      {
+        root: null,
+        rootMargin: "200px",
+        threshold: 0,
+      }
     );
 
-    return (
-        <Stack gap="lg">
-            {/* <HierarchicalFilters
-                facetOptions={facetOptions}
-                selectedDays={selectedDays}
-                onDaysChange={setSelectedDays}
-                selectedTimePreset={selectedTimePreset}
-                onTimePresetChange={setSelectedTimePreset}
-                customTimeRange={customTimeRange}
-                onCustomTimeRangeChange={setCustomTimeRange}
-                selectedCategories={selectedCategories}
-                onCategoriesChange={setSelectedCategories}
-                selectedRegions={selectedRegions}
-                onRegionsChange={setSelectedRegions}
-                selectedVenues={selectedVenues}
-                onVenuesChange={setSelectedVenues}
-                selectedTags={selectedTags}
-                onTagsChange={setSelectedTags}
-                onClearAll={clearAllFilters}
-            /> */}
+    observer.observe(trigger);
 
+    return () => {
+      observer.disconnect();
+    };
+  }, [filteredEvents.length, hasMoreEvents]);
 
-            <Text fw={500} ta="center">{totalCount} eventos encontrados</Text>
-            <Stack gap="lg">
-                {Object.keys(eventsByDate)
-                    .sort()
-                    .map((date) => (
-                        <Stack key={date} gap="md">
+  return (
+    <Stack gap="md">
+      <HierarchicalFilters data={data} />
+      <Paper
+        p="md"
+        radius={EVENTS_2026_TOKENS.radius.content}
+        style={{
+          border: `1px solid ${EVENTS_2026_TOKENS.colors.borderViolet}`,
+          backgroundColor: "rgba(0, 0, 0, 0.15)",
+        }}
+      >
+        {/* Mantine Group docs: https://mantine.dev/core/group/#usage */}
+        <Group align="flex-end" justify="space-between" gap="sm" wrap="nowrap">
+          <Stack gap={4} style={{ flex: 1 }}>
+            {/* Mantine Title docs: https://mantine.dev/core/title/#usage */}
+            <Title
+              order={1}
+              c={EVENTS_2026_TOKENS.colors.textPrimary}
+              fz={36}
+              lh={0.64}
+              style={{ fontFamily: "var(--font-nerko-one)", textTransform: "none" }}
+            >
+              Eventos
+            </Title>
+            {/* Mantine Text docs: https://mantine.dev/core/text/#usage */}
+            <Text c={EVENTS_2026_TOKENS.colors.textPrimary} fz={12}>
+              {totalCount} Eventos encontrados!
+            </Text>
+          </Stack>
 
-                            <Title order={3}>{date}</Title>
-                            <Stack gap="sm">
-                                {eventsByDate[date].map((event, i) => (
-                                    <div key={event.id} style={{ display: "flex", gap: 16 }}>
-                                        <Image
+          <Stack gap={6} align="center">
+            <ActionCircleButton variant="filter" size={35} ariaLabel="Abrir filtros" />
+            <Text c={EVENTS_2026_TOKENS.colors.textPrimary} fz={12}>
+              Filtrar
+            </Text>
+          </Stack>
+        </Group>
 
-                                            src={event.imageUrl || "/placeholder.png"}
-                                            alt={event.title}
-                                            width={600}
-                                            height={400}
-                                            style={{ borderRadius: 8 }}
-                                        />
-                                        <NormalizedEventCard key={event.id} event={event} />
-                                    </div>
-                                ))}
-                            </Stack>
-                        </Stack>
-                    ))}
-            </Stack>
-
-            {hasMoreEvents && <div ref={loadMoreTriggerRef} style={{ height: 1 }} />}
-
-            {hasMoreEvents && (
-                <Text size="sm" c="dimmed" ta="center">
-                    Carregando mais eventos...
-                </Text>
-            )}
-
-            {totalCount === 0 && (
-                <Text ta="center" py="xl" c="dimmed">
-                    Nenhum evento encontrado com os filtros selecionados.
-                </Text>
-            )}
+        <Stack gap="md" mt="md">
+          {visibleEvents.map((event) => (
+            <NormalizedEventCard key={event.id} event={event} />
+          ))}
         </Stack>
-    );
+      </Paper>
+
+      {hasMoreEvents && <div ref={loadMoreTriggerRef} style={{ height: 1 }} />}
+
+      {hasMoreEvents && (
+        <Text size="sm" c={EVENTS_2026_TOKENS.colors.textPrimary} ta="center">
+          Carregando mais eventos...
+        </Text>
+      )}
+
+      {totalCount === 0 && (
+        <Text ta="center" py="xl" c={EVENTS_2026_TOKENS.colors.textPrimary}>
+          Nenhum evento encontrado com os filtros selecionados.
+        </Text>
+      )}
+    </Stack>
+  );
 };
