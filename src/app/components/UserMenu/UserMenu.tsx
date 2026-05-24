@@ -4,7 +4,6 @@ import { clearSession } from "@utils/auth";
 import { useRouter } from "next/navigation";
 import { ActionCircleButton } from "../ActionButton";
 
-
 export const UserMenu = () => {
   const router = useRouter();
 

@@ -8,4 +8,3 @@ export { default as MinusIcon } from "./minus.svg";
 export { default as PlusIcon } from "./plus.svg";
 export { default as StarFilledIcon } from "./star-filled.svg";
 export { default as StarOutlineIcon } from "./star-outline.svg";
-

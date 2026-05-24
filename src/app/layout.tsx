@@ -31,14 +31,17 @@ const nerkoOne = Nerko_One({
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="pt-BR" style={{
-      scrollbarWidth: "thin",
-      scrollbarColor: `#6741D9 #231a36`,
-      scrollBehavior: "smooth"
-    }}>
+    <html
+      lang="pt-BR"
+      style={{
+        scrollbarWidth: "thin",
+        scrollbarColor: `#6741D9 #231a36`,
+        scrollBehavior: "smooth",
+      }}
+    >
       <body className={`${geistSans.variable} ${geistMono.variable} ${nerkoOne.variable} bg-main`}>
         <MantineProvider theme={theme}>{children}</MantineProvider>
       </body>
-    </html >
+    </html>
   );
 }
