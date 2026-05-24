@@ -72,19 +72,19 @@ export function NormalizedEventCard({
   const statusStyle =
     timelineStatus === "live"
       ? {
-        borderColor: EVENTS_2026_TOKENS.colors.borderOrange,
-        backgroundColor: "rgba(253, 126, 20, 0.16)",
-      }
+          borderColor: EVENTS_2026_TOKENS.colors.borderOrange,
+          backgroundColor: "rgba(253, 126, 20, 0.16)",
+        }
       : timelineStatus === "past"
         ? {
-          borderColor: "rgba(255, 255, 255, 0.16)",
-          backgroundColor: "rgba(255, 255, 255, 0.04)",
-          opacity: 0.72,
-        }
+            borderColor: "rgba(255, 255, 255, 0.16)",
+            backgroundColor: "rgba(255, 255, 255, 0.04)",
+            opacity: 0.72,
+          }
         : {
-          borderColor: EVENTS_2026_TOKENS.colors.borderViolet,
-          backgroundColor: "rgba(76, 53, 194, 0.14)",
-        };
+            borderColor: EVENTS_2026_TOKENS.colors.borderViolet,
+            backgroundColor: "rgba(76, 53, 194, 0.14)",
+          };
 
   return (
     // Mantine Flex docs: https://mantine.dev/core/flex/#usage

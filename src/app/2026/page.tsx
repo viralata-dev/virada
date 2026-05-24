@@ -23,7 +23,7 @@ export default function Page2026() {
       px="xs"
       fs="xs"
       h="100%"
-      style={{ overflowY: "auto"}}
+      style={{ overflowY: "auto" }}
       pos="relative"
     >
       <DataGrid />

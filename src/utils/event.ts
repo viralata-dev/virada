@@ -87,16 +87,16 @@ export function parseEventDateTime(dateStr: string, timeStr: string): Date | nul
   const hour = Number.parseInt(timeMatch[1] ?? "", 10);
   const minute = Number.parseInt(timeMatch[2] ?? "", 10);
 
-  if (
-    [year, month, day, hour, minute].some((value) => Number.isNaN(value))
-  ) {
+  if ([year, month, day, hour, minute].some((value) => Number.isNaN(value))) {
     return null;
   }
 
   return new Date(year, month - 1, day, hour, minute, 0, 0);
 }
 
-export function getEventTimeRange(event: Pick<NormalizedEvent, "startDate" | "startTime" | "endDate" | "endTime">): EventTimeRange | null {
+export function getEventTimeRange(
+  event: Pick<NormalizedEvent, "startDate" | "startTime" | "endDate" | "endTime">
+): EventTimeRange | null {
   const start = parseEventDateTime(event.startDate, event.startTime);
   const end = parseEventDateTime(event.endDate, event.endTime);
 

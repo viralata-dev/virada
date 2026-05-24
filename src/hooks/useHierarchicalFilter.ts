@@ -291,5 +291,4 @@ export function useHierarchicalFilter(rawEvents: EventRecord[]) {
     ...filterResult,
     filterResetKey,
   };
-
 }
