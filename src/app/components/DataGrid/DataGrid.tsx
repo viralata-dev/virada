@@ -2,7 +2,7 @@
 
 import data from "@data/events.json";
 import { useFavoriteEvents } from "@hooks/useFavoriteEvents";
-import { Group, Paper, Stack, Text, Title } from "@mantine/core";
+import { Group, Paper, Stack, Text, TextInput, Title } from "@mantine/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useHierarchicalFilter } from "~/hooks/useHierarchicalFilter";
 import type { EventRecord } from "~/types/event26";
@@ -14,27 +14,49 @@ import { HierarchicalFilters } from "./DataFilter";
 const INITIAL_EVENTS_BATCH = 40;
 const EVENTS_BATCH_SIZE = 40;
 
+function normalizeSearchValue(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLocaleLowerCase()
+    .trim();
+}
+
 export const DataGrid = () => {
   const filters = useHierarchicalFilter(data as EventRecord[]);
   const { filteredEvents, totalCount, filterResetKey } = filters;
   const { isFavorite, toggleFavorite } = useFavoriteEvents();
 
   const [isFiltersDrawerOpened, setIsFiltersDrawerOpened] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(INITIAL_EVENTS_BATCH);
   const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null);
 
-  const hasMoreEvents = visibleCount < filteredEvents.length;
+  const searchFilteredEvents = useMemo(() => {
+    const normalizedQuery = normalizeSearchValue(searchQuery);
+    if (!normalizedQuery) {
+      return filteredEvents;
+    }
+
+    return filteredEvents.filter((event) => {
+      const searchableContent = normalizeSearchValue(`${event.title} ${event.venue}`);
+      return searchableContent.includes(normalizedQuery);
+    });
+  }, [filteredEvents, searchQuery]);
+
+  const searchResultsCount = searchFilteredEvents.length;
+  const hasMoreEvents = visibleCount < searchResultsCount;
 
   const visibleEvents = useMemo(
-    () => filteredEvents.slice(0, visibleCount),
-    [filteredEvents, visibleCount]
+    () => searchFilteredEvents.slice(0, visibleCount),
+    [searchFilteredEvents, visibleCount]
   );
 
   useEffect(() => {
     // Reset visible items when filters change.
     void filterResetKey;
     setVisibleCount(INITIAL_EVENTS_BATCH);
-  }, [filterResetKey]);
+  }, [filterResetKey, searchQuery]);
 
   useEffect(() => {
     const trigger = loadMoreTriggerRef.current;
@@ -95,7 +117,7 @@ export const DataGrid = () => {
             </Title>
             {/* Mantine Text docs: https://mantine.dev/core/text/#usage */}
             <Text c={EVENTS_2026_TOKENS.colors.textPrimary} fz={12}>
-              {totalCount} Eventos encontrados!
+              {searchResultsCount} Eventos encontrados!
             </Text>
           </Stack>
 
@@ -111,6 +133,23 @@ export const DataGrid = () => {
             </Text>
           </Stack>
         </Group>
+
+        {/* Mantine TextInput docs: https://mantine.dev/core/text-input/#usage */}
+        <TextInput
+          mt="md"
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.currentTarget.value)}
+          placeholder="Buscar por título ou local"
+          aria-label="Buscar eventos por título ou local"
+          radius={EVENTS_2026_TOKENS.radius.card}
+          styles={{
+            input: {
+              color: EVENTS_2026_TOKENS.colors.textPrimary,
+              borderColor: EVENTS_2026_TOKENS.colors.borderViolet,
+              backgroundColor: EVENTS_2026_TOKENS.colors.overlay,
+            },
+          }}
+        />
 
         <Stack gap="md" mt="md">
           {visibleEvents.map((event) => (
@@ -132,9 +171,9 @@ export const DataGrid = () => {
         </Text>
       )}
 
-      {totalCount === 0 && (
+      {searchResultsCount === 0 && (
         <Text ta="center" py="xl" c={EVENTS_2026_TOKENS.colors.textPrimary}>
-          Nenhum evento encontrado com os filtros selecionados.
+          Nenhum evento encontrado com os filtros ou busca selecionados.
         </Text>
       )}
     </Stack>

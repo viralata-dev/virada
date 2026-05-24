@@ -73,6 +73,31 @@ const renderWithMantine = () => {
 };
 
 describe("DataGrid filter wiring", () => {
+  it("filters events with the global title or venue search", async () => {
+    renderWithMantine();
+
+    const searchInput = await screen.findByRole("textbox", {
+      name: "Buscar eventos por título ou local",
+    });
+
+    await userEvent.type(searchInput, "Local B");
+
+    await waitFor(() => {
+      expect(screen.queryByText("Evento Sabado")).not.toBeInTheDocument();
+      expect(screen.getByText("Evento Domingo")).toBeInTheDocument();
+      expect(screen.getByText("1 Eventos encontrados!")).toBeInTheDocument();
+    });
+
+    await userEvent.clear(searchInput);
+    await userEvent.type(searchInput, "Evento Sabado");
+
+    await waitFor(() => {
+      expect(screen.getByText("Evento Sabado")).toBeInTheDocument();
+      expect(screen.queryByText("Evento Domingo")).not.toBeInTheDocument();
+      expect(screen.getByText("1 Eventos encontrados!")).toBeInTheDocument();
+    });
+  });
+
   it("applies day filter from DataFilter to the visible events list", async () => {
     renderWithMantine();
 
