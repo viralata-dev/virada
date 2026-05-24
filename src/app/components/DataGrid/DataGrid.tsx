@@ -31,24 +31,24 @@ export const DataGrid = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(INITIAL_EVENTS_BATCH);
   const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null);
+  const normalizedSearchQuery = useMemo(() => normalizeSearchValue(searchQuery), [searchQuery]);
 
   const searchFilteredEvents = useMemo(() => {
-    const normalizedQuery = normalizeSearchValue(searchQuery);
-    if (!normalizedQuery) {
+    if (!normalizedSearchQuery) {
       return filteredEvents;
     }
 
     return filteredEvents.filter((event) => {
       const searchableContent = normalizeSearchValue(`${event.title} ${event.venue}`);
-      return searchableContent.includes(normalizedQuery);
+      return searchableContent.includes(normalizedSearchQuery);
     });
-  }, [filteredEvents, searchQuery]);
+  }, [filteredEvents, normalizedSearchQuery]);
 
-  const searchResultsCount = searchFilteredEvents.length;
-  const hasMoreEvents = visibleCount < searchResultsCount;
+  const filteredCount = searchFilteredEvents.length;
+  const hasMoreEvents = visibleCount < filteredCount;
   const visibleResetKey = useMemo(
-    () => `${filterResetKey}:${normalizeSearchValue(searchQuery)}`,
-    [filterResetKey, searchQuery]
+    () => `${filterResetKey}:${normalizedSearchQuery}`,
+    [filterResetKey, normalizedSearchQuery]
   );
 
   const visibleEvents = useMemo(
@@ -121,7 +121,7 @@ export const DataGrid = () => {
             </Title>
             {/* Mantine Text docs: https://mantine.dev/core/text/#usage */}
             <Text c={EVENTS_2026_TOKENS.colors.textPrimary} fz={12}>
-              {searchResultsCount} Eventos encontrados!
+              {filteredCount} Eventos encontrados!
             </Text>
           </Stack>
 
@@ -175,7 +175,7 @@ export const DataGrid = () => {
         </Text>
       )}
 
-      {searchResultsCount === 0 && (
+      {filteredCount === 0 && (
         <Text ta="center" py="xl" c={EVENTS_2026_TOKENS.colors.textPrimary}>
           Nenhum evento encontrado com os filtros ou busca selecionados.
         </Text>
