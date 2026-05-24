@@ -24,7 +24,7 @@ function normalizeSearchValue(value: string): string {
 
 export const DataGrid = () => {
   const filters = useHierarchicalFilter(data as EventRecord[]);
-  const { filteredEvents, totalCount, filterResetKey } = filters;
+  const { filteredEvents, filterResetKey } = filters;
   const { isFavorite, toggleFavorite } = useFavoriteEvents();
 
   const [isFiltersDrawerOpened, setIsFiltersDrawerOpened] = useState(false);
@@ -46,6 +46,10 @@ export const DataGrid = () => {
 
   const searchResultsCount = searchFilteredEvents.length;
   const hasMoreEvents = visibleCount < searchResultsCount;
+  const visibleResetKey = useMemo(
+    () => `${filterResetKey}:${normalizeSearchValue(searchQuery)}`,
+    [filterResetKey, searchQuery]
+  );
 
   const visibleEvents = useMemo(
     () => searchFilteredEvents.slice(0, visibleCount),
@@ -54,9 +58,9 @@ export const DataGrid = () => {
 
   useEffect(() => {
     // Reset visible items when filters change.
-    void filterResetKey;
+    void visibleResetKey;
     setVisibleCount(INITIAL_EVENTS_BATCH);
-  }, [filterResetKey, searchQuery]);
+  }, [visibleResetKey]);
 
   useEffect(() => {
     const trigger = loadMoreTriggerRef.current;
