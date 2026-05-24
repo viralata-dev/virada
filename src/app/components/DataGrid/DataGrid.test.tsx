@@ -124,7 +124,7 @@ describe("DataGrid filter wiring", () => {
         const categoryInput = await screen.findByPlaceholderText("Selecione categorias...");
 
         await userEvent.click(categoryInput);
-        await userEvent.click(await screen.findByText("Musica (1)"));
+        await userEvent.click(await screen.findByText("Musica"));
 
         await waitFor(() => {
             expect(screen.getByText("Evento Sabado")).toBeInTheDocument();
@@ -134,7 +134,7 @@ describe("DataGrid filter wiring", () => {
 
         await userEvent.click(categoryInput);
         await userEvent.type(categoryInput, "Tea");
-        await userEvent.click(await screen.findByText("Teatro (1)"));
+        await userEvent.click(await screen.findByText("Teatro"));
 
         await waitFor(() => {
             expect(screen.getByText("Evento Sabado")).toBeInTheDocument();
@@ -150,14 +150,14 @@ describe("DataGrid filter wiring", () => {
 
         const categoryInput = await screen.findByPlaceholderText("Selecione categorias...");
         await userEvent.click(categoryInput);
-        await userEvent.click(await screen.findByText("Musica (1)"));
+        await userEvent.click(await screen.findByText("Musica"));
 
         const localInput = await screen.findByPlaceholderText("Selecione locais...");
         await userEvent.click(localInput);
 
         await waitFor(() => {
-            expect(screen.getByText("Local A (1)")).toBeInTheDocument();
-            expect(screen.getByText("Local B (0)")).toBeInTheDocument();
+            expect(screen.getByText("Local A")).toBeInTheDocument();
+            expect(screen.queryByText("Local B")).not.toBeInTheDocument();
         });
     });
 
@@ -168,7 +168,7 @@ describe("DataGrid filter wiring", () => {
 
         const regionInput = await screen.findByPlaceholderText("Selecione regioes...");
         await userEvent.click(regionInput);
-        await userEvent.click(await screen.findByText("Centro (1)"));
+        await userEvent.click(await screen.findByText("Centro"));
 
         await waitFor(() => {
             expect(screen.getByText("Evento Sabado")).toBeInTheDocument();
@@ -178,7 +178,7 @@ describe("DataGrid filter wiring", () => {
 
         await userEvent.click(regionInput);
         await userEvent.type(regionInput, "Zona");
-        await userEvent.click(await screen.findByText("Zona Sul (0)"));
+        await userEvent.click(await screen.findByText("Zona Sul"));
 
         await waitFor(() => {
             expect(screen.getByText("Evento Sabado")).toBeInTheDocument();

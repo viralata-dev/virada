@@ -16,12 +16,24 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  height: 100dvh;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100dvh;
+}
+
+/* Ensure focused inputs are not hidden behind the mobile virtual keyboard.
+   The value accounts for the average height of a mobile on-screen keyboard. */
+input,
+textarea {
+  scroll-margin-bottom: 120px;
 }
 
 * {

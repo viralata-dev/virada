@@ -33,9 +33,9 @@ export function HierarchicalFilters({ filters, opened, onClose }: DataFilterProp
     selectedRegions,
     selectedVenues,
     facetOptions,
-    allCategoryOptions,
-    allRegionOptions,
-    allVenueOptions,
+    availableCategoryOptions,
+    availableRegionOptions,
+    availableVenueOptions,
     onDaysChange,
     onVenuesChange,
     onCategoriesChange,
@@ -94,32 +94,22 @@ export function HierarchicalFilters({ filters, opened, onClose }: DataFilterProp
     dayNumber: day.value.split("-")[2] ?? day.value,
   }));
 
-  const categoryCountsByName = new Map(
-    facetOptions.categories.map((category) => [category.category, category.count])
-  );
-
-  const categoriesData = allCategoryOptions.map((c) => ({
-    value: c.category,
-    label: `${c.category} (${categoryCountsByName.get(c.category) ?? c.count})`,
+  const categoriesData = availableCategoryOptions.map((category) => ({
+    value: category,
+    label: category,
   }));
 
-  const regionCountsByName = new Map(
-    facetOptions.regions.map((region) => [region.region, region.count])
-  );
-
-  const venueCountsByName = new Map(facetOptions.venues.map((venue) => [venue.venue, venue.count]));
-
-  const regionsData = allRegionOptions.map((r) => ({
-    value: r.region,
-    label: `${r.region} (${regionCountsByName.get(r.region) ?? 0})`,
+  const regionsData = availableRegionOptions.map((region) => ({
+    value: region,
+    label: region,
   }));
 
-  const venuesData = allVenueOptions.map((v) => ({
-    value: v.venue,
-    label: `${v.venue} (${venueCountsByName.get(v.venue) ?? 0})`,
+  const venuesData = availableVenueOptions.map((venue) => ({
+    value: venue,
+    label: venue,
   }));
 
-  const allVisibleVenueValues = facetOptions.venues.map((venue) => venue.venue);
+  const allVisibleVenueValues = availableVenueOptions;
   const allVisibleVenuesSelected =
     allVisibleVenueValues.length > 0 &&
     allVisibleVenueValues.every((venue) => selectedVenues.has(venue));

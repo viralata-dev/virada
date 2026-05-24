@@ -35,4 +35,7 @@ export interface FilteredResult {
   matchedEventIds: Set<string>;
   facetOptions: FacetOptions;
   totalCount: number;
+  availableCategoryOptions: string[];
+  availableRegionOptions: string[];
+  availableVenueOptions: string[];
 }
