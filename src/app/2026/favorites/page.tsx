@@ -29,7 +29,6 @@ import type { EventRecord } from "~/types/event26";
 import { EVENTS_2026_TOKENS } from "../../components/Events2026";
 
 const TIMELINE_PIXELS_PER_HOUR = 84;
-const MIN_CARD_HEIGHT = 72;
 const MIN_TIMELINE_HEIGHT = 360;
 const TIMELINE_COLUMN_WIDTH = 180;
 const TIMELINE_COLUMN_MAX_WIDTH = 220;
@@ -57,20 +56,17 @@ function formatTimelineDay(date: Date): string {
   }).format(date);
 }
 
-function getTimelinePlacement(event: NormalizedEvent, timelineStart: Date) {
+export function getTimelinePlacement(event: NormalizedEvent, timelineStart: Date) {
   const range = getEventTimeRange(event);
   if (!range) {
     return {
       top: 0,
-      height: MIN_CARD_HEIGHT,
+      height: 0,
     };
   }
 
   const top = Math.max(0, minutesToPixels(getTimelineMinutesBetween(timelineStart, range.start)));
-  const height = Math.max(
-    MIN_CARD_HEIGHT,
-    minutesToPixels(getTimelineMinutesBetween(range.start, range.end))
-  );
+  const height = minutesToPixels(getTimelineMinutesBetween(range.start, range.end));
 
   return {
     top,

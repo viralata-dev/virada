@@ -1,6 +1,6 @@
 import type { NormalizedEvent } from "@utils/event";
 import { describe, expect, it } from "vitest";
-import { groupFavoriteEventsByVenue } from "./page";
+import { getTimelinePlacement, groupFavoriteEventsByVenue } from "./page";
 
 function makeEvent(overrides: Partial<NormalizedEvent>): NormalizedEvent {
   return {
@@ -41,5 +41,24 @@ describe("groupFavoriteEventsByVenue", () => {
     const grouped = groupFavoriteEventsByVenue([makeEvent({ venue: "   " })]);
 
     expect(grouped).toEqual([["Sem local", [expect.objectContaining({ title: "Evento" })]]]);
+  });
+});
+
+describe("getTimelinePlacement", () => {
+  it("uses the event duration as the card height", () => {
+    const placement = getTimelinePlacement(
+      makeEvent({
+        startDate: "2026-05-24",
+        startTime: "10:00",
+        endDate: "2026-05-24",
+        endTime: "10:30",
+      }),
+      new Date(2026, 4, 24, 9, 0, 0, 0)
+    );
+
+    expect(placement).toEqual({
+      top: 84,
+      height: 42,
+    });
   });
 });
