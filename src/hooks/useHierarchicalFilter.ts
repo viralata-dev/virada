@@ -106,17 +106,26 @@ export function useHierarchicalFilter(rawEvents: EventRecord[]) {
       currentMinutes,
     });
 
+    // Snapshot after day+time: used to determine available category options
+    const afterDayTime = matchedEventIds;
+
     matchedEventIds = applyCategoryFilter({
       matchedEventIds,
       selectedCategories,
       index,
     });
 
+    // Snapshot after category: used to determine available region options
+    const afterCategory = matchedEventIds;
+
     matchedEventIds = applyRegionFilter({
       matchedEventIds,
       selectedRegions,
       index,
     });
+
+    // Snapshot after region: used to determine available venue options
+    const afterRegion = matchedEventIds;
 
     matchedEventIds = applyVenueFilter({
       matchedEventIds,
@@ -129,6 +138,22 @@ export function useHierarchicalFilter(rawEvents: EventRecord[]) {
       matchedEventIds,
       index
     );
+
+    // Compute hierarchical options: each level limited by preceding filters
+    const availableCategoryOptions = Array.from(index.categoryToEventIds.entries())
+      .filter(([, ids]) => Array.from(ids).some((id) => afterDayTime.has(id)))
+      .map(([category]) => category)
+      .sort((a, b) => a.localeCompare(b));
+
+    const availableRegionOptions = Array.from(index.regionToEventIds.entries())
+      .filter(([, ids]) => Array.from(ids).some((id) => afterCategory.has(id)))
+      .map(([region]) => region)
+      .sort((a, b) => a.localeCompare(b));
+
+    const availableVenueOptions = Array.from(index.venueToEventIds.entries())
+      .filter(([, ids]) => Array.from(ids).some((id) => afterRegion.has(id)))
+      .map(([venue]) => venue)
+      .sort((a, b) => a.localeCompare(b));
 
     const filteredEvents = Array.from(matchedEventIds)
       .map((id) => eventById.get(id))
@@ -146,6 +171,9 @@ export function useHierarchicalFilter(rawEvents: EventRecord[]) {
       matchedEventIds,
       facetOptions,
       totalCount: filteredEvents.length,
+      availableCategoryOptions,
+      availableRegionOptions,
+      availableVenueOptions,
     };
   }, [
     index,
@@ -263,4 +291,5 @@ export function useHierarchicalFilter(rawEvents: EventRecord[]) {
     ...filterResult,
     filterResetKey,
   };
+
 }
