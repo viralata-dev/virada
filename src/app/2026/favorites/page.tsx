@@ -31,12 +31,12 @@ import { EVENTS_2026_TOKENS } from "../../components/Events2026";
 const TIMELINE_PIXELS_PER_HOUR = 84;
 const MIN_CARD_HEIGHT = 72;
 const MIN_TIMELINE_HEIGHT = 360;
-const REGION_CARD_WIDTH = 180;
-const REGION_CARD_MAX_WIDTH = 220;
-const REGION_GAP = 16;
+const TIMELINE_COLUMN_WIDTH = 180;
+const TIMELINE_COLUMN_MAX_WIDTH = 220;
+const TIMELINE_COLUMN_GAP = 16;
 const LEFT_RAIL_WIDTH = 40;
 const TIME_TICK_STEP_HOURS = 1;
-const REGION_LANE_TOP_OFFSET = 56;
+const TIMELINE_LANE_TOP_OFFSET = 56;
 
 function minutesToPixels(minutes: number): number {
   return (minutes / 60) * TIMELINE_PIXELS_PER_HOUR;
@@ -127,6 +127,18 @@ function getStatusColors(status: EventTimelineStatus) {
   };
 }
 
+export function groupFavoriteEventsByVenue(events: NormalizedEvent[]) {
+  const grouped = new Map<string, NormalizedEvent[]>();
+
+  for (const event of events) {
+    const venueKey = event.venue.trim() || "Sem local";
+    const previous = grouped.get(venueKey) ?? [];
+    grouped.set(venueKey, [...previous, event]);
+  }
+
+  return Array.from(grouped.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+}
+
 export default function FavoritesPage() {
   const router = useRouter();
   const { favoriteEventIds, isFavorite, toggleFavorite } = useFavoriteEvents();
@@ -147,8 +159,8 @@ export default function FavoritesPage() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const favoriteEventsByRegion = useMemo(() => {
-    const normalizedEvents = (data as EventRecord[])
+  const favoriteEventsByVenue = useMemo(() => {
+    const favoriteEvents = (data as EventRecord[])
       .map((record, index) => normalizeEvent(record, index))
       .filter((event): event is NormalizedEvent => event !== null)
       .sort((a, b) => {
@@ -158,23 +170,15 @@ export default function FavoritesPage() {
         }
 
         return a.startTime.localeCompare(b.startTime);
-      });
+      })
+      .filter((event) => favoriteEventIds.has(event.id));
 
-    const favorites = normalizedEvents.filter((event) => favoriteEventIds.has(event.id));
-
-    const grouped = new Map<string, typeof favorites>();
-    for (const event of favorites) {
-      const regionKey = event.region || "Sem região";
-      const previous = grouped.get(regionKey) ?? [];
-      grouped.set(regionKey, [...previous, event]);
-    }
-
-    return Array.from(grouped.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+    return groupFavoriteEventsByVenue(favoriteEvents);
   }, [favoriteEventIds]);
 
   const allFavoriteEvents = useMemo(
-    () => favoriteEventsByRegion.flatMap(([, events]) => events),
-    [favoriteEventsByRegion]
+    () => favoriteEventsByVenue.flatMap(([, events]) => events),
+    [favoriteEventsByVenue]
   );
 
   const timelineBounds = useMemo(() => {
@@ -240,7 +244,7 @@ export default function FavoritesPage() {
           Favoritos
         </Title>
 
-        {favoriteEventsByRegion.length === 0 || !timelineBounds ? (
+        {favoriteEventsByVenue.length === 0 || !timelineBounds ? (
           // Mantine Text docs: https://mantine.dev/core/text/#usage
           <Text ta="center" c={EVENTS_2026_TOKENS.colors.textPrimary} py="xl">
             Nenhum evento favoritado ainda. Toque na estrela no topo dos cards para salvar.
@@ -250,7 +254,7 @@ export default function FavoritesPage() {
             style={{
               display: "grid",
               gridTemplateColumns: `${LEFT_RAIL_WIDTH}px minmax(0, 1fr)`,
-              gap: REGION_GAP,
+              gap: TIMELINE_COLUMN_GAP,
               alignItems: "start",
             }}
           >
@@ -258,14 +262,14 @@ export default function FavoritesPage() {
               <Box
                 style={{
                   position: "relative",
-                  height: timelineBounds.height + REGION_LANE_TOP_OFFSET,
+                  height: timelineBounds.height + TIMELINE_LANE_TOP_OFFSET,
                 }}
               >
                 <Box
                   style={{
                     position: "absolute",
                     left: "50%",
-                    top: REGION_LANE_TOP_OFFSET,
+                    top: TIMELINE_LANE_TOP_OFFSET,
                     bottom: 0,
                     width: 2,
                     transform: "translateX(-50%)",
@@ -283,7 +287,7 @@ export default function FavoritesPage() {
                       key={tick.toISOString()}
                       style={{
                         position: "absolute",
-                        top: top + REGION_LANE_TOP_OFFSET,
+                        top: top + TIMELINE_LANE_TOP_OFFSET,
                         left: 0,
                         right: 0,
                         display: "grid",
@@ -326,7 +330,7 @@ export default function FavoritesPage() {
                   <Box
                     style={{
                       position: "absolute",
-                      top: currentTimePosition + REGION_LANE_TOP_OFFSET,
+                      top: currentTimePosition + TIMELINE_LANE_TOP_OFFSET,
                       left: 0,
                       right: 0,
                       display: "flex",
@@ -375,34 +379,34 @@ export default function FavoritesPage() {
               <Box
                 style={{
                   display: "flex",
-                  gap: REGION_GAP,
+                  gap: TIMELINE_COLUMN_GAP,
                   minWidth: "max-content",
                   paddingBottom: 16,
                 }}
               >
-                {favoriteEventsByRegion.map(([region, regionEvents]) => {
-                  const regionHeight = timelineBounds.height;
+                {favoriteEventsByVenue.map(([venue, venueEvents]) => {
+                  const venueHeight = timelineBounds.height;
 
                   return (
                     <Card
-                      key={region}
+                      key={venue}
                       withBorder
                       radius="md"
                       p="sm"
                       style={{
-                        minWidth: REGION_CARD_WIDTH,
-                        maxWidth: REGION_CARD_MAX_WIDTH,
+                        minWidth: TIMELINE_COLUMN_WIDTH,
+                        maxWidth: TIMELINE_COLUMN_MAX_WIDTH,
                         borderColor: EVENTS_2026_TOKENS.colors.borderViolet,
                         backgroundColor: "rgba(0, 0, 0, 0.15)",
                       }}
                     >
                       <Stack gap="md">
                         <Title order={3} c={EVENTS_2026_TOKENS.colors.textPrimary}>
-                          {region}
+                          {venue}
                         </Title>
 
-                        <Box style={{ position: "relative", height: regionHeight }}>
-                          {regionEvents.map((event) => {
+                        <Box style={{ position: "relative", height: venueHeight }}>
+                          {venueEvents.map((event) => {
                             const status = getEventTimelineStatus(event);
                             const colors = getStatusColors(status);
                             const placement = getTimelinePlacement(event, timelineBounds.start);
@@ -473,7 +477,7 @@ export default function FavoritesPage() {
                                         lh={1.2}
                                         style={{ overflowWrap: "anywhere" }}
                                       >
-                                        {event.venue}
+                                        {event.region}
                                       </Text>
                                     </Stack>
                                     <Box
