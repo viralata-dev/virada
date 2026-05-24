@@ -136,6 +136,28 @@ describe("DataGrid filter wiring", () => {
     });
   });
 
+  it("combines the global search with the existing filters", async () => {
+    renderWithMantine();
+
+    const searchInput = await screen.findByRole("textbox", {
+      name: "Buscar eventos por título ou local",
+    });
+
+    await userEvent.type(searchInput, "Evento");
+    await userEvent.click(screen.getByRole("button", { name: "Abrir filtros" }));
+    await userEvent.click(
+      await screen.findByRole("button", {
+        name: "Dia 2026-05-24 (1)",
+      })
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Evento Sabado")).toBeInTheDocument();
+      expect(screen.queryByText("Evento Domingo")).not.toBeInTheDocument();
+      expect(screen.getByText("1 Eventos encontrados!")).toBeInTheDocument();
+    });
+  });
+
   it("allows selecting multiple category values with search after first selection", async () => {
     renderWithMantine();
 
