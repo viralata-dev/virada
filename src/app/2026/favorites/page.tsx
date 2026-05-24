@@ -29,6 +29,7 @@ import type { EventRecord } from "~/types/event26";
 import { EVENTS_2026_TOKENS } from "../../components/Events2026";
 
 const TIMELINE_PIXELS_PER_HOUR = 84;
+const FALLBACK_CARD_HEIGHT = 42;
 const MIN_TIMELINE_HEIGHT = 360;
 const TIMELINE_COLUMN_WIDTH = 180;
 const TIMELINE_COLUMN_MAX_WIDTH = 220;
@@ -61,7 +62,7 @@ export function getTimelinePlacement(event: NormalizedEvent, timelineStart: Date
   if (!range) {
     return {
       top: 0,
-      height: 0,
+      height: FALLBACK_CARD_HEIGHT,
     };
   }
 

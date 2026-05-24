@@ -61,4 +61,18 @@ describe("getTimelinePlacement", () => {
       height: 42,
     });
   });
+
+  it("keeps invalid ranges visible with a fallback height", () => {
+    const placement = getTimelinePlacement(
+      makeEvent({
+        startDate: "invalid-date",
+      }),
+      new Date(2026, 4, 24, 9, 0, 0, 0)
+    );
+
+    expect(placement).toEqual({
+      top: 0,
+      height: 42,
+    });
+  });
 });
